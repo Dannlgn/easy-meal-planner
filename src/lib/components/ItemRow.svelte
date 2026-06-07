@@ -21,6 +21,8 @@
   $: macroKcal = macro ? Math.round((macro.c / 100) * qty * 4 + (macro.p / 100) * qty * 4 + (macro.f / 100) * qty * 9) : null;
 
   let invalid = false;
+  let focused = false;
+  let inputEl: HTMLInputElement;
 
   function handleBlur(e: FocusEvent) {
     const el  = e.currentTarget as HTMLInputElement;
@@ -48,6 +50,16 @@
 
   function handleFocus(e: FocusEvent) {
     (e.currentTarget as HTMLInputElement).select();
+    focused = true;
+  }
+
+  function handleBlurWrapper(e: FocusEvent) {
+    focused = false;
+    handleBlur(e);
+  }
+
+  function confirmValue() {
+    inputEl?.blur();
   }
 </script>
 
@@ -62,7 +74,7 @@
       >
         {item.name}
         {#if hasMacro}
-          <span class="chv" class:open={expanded}> ›</span>
+          <span class="chv" class:open={expanded}>▶</span>
         {/if}
       </span>
       {#if isMain}
@@ -72,6 +84,7 @@
 
     <div class="qty-wrap">
       <input
+        bind:this={inputEl}
         type="number"
         inputmode="numeric"
         min="1"
@@ -79,11 +92,15 @@
         value={qty}
         class:invalid
         aria-label="{item.name} grammi"
-        on:blur={handleBlur}
+        on:blur={handleBlurWrapper}
         on:focus={handleFocus}
         on:keydown={handleKeydown}
       />
-      <span class="qty-unit">gr</span>
+      {#if focused}
+        <button class="btn-confirm" on:mousedown|preventDefault={confirmValue} aria-label="Conferma">✓</button>
+      {:else}
+        <span class="qty-unit">gr</span>
+      {/if}
     </div>
   </div>
 
@@ -129,13 +146,21 @@
     color: var(--text);
     line-height: 1.35;
   }
-  .item-name.macro-toggle { cursor: pointer; }
+  .item-name.macro-toggle {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 3px;
+  }
+  .item-name.macro-toggle:active { opacity: .7; }
 
   .chv {
     display: inline-block;
-    font-size: 11px;
-    color: var(--muted);
+    font-size: 9px;
+    color: var(--accent);
     transition: transform .2s;
+    margin-left: 2px;
+    vertical-align: middle;
   }
   .chv.open { transform: rotate(90deg); }
 
@@ -196,7 +221,25 @@
     font-size: 13px;
     font-weight: 500;
     color: var(--muted);
-    width: 18px;
+    width: 22px;
+    text-align: left;
+  }
+
+  .btn-confirm {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
   }
 
   /* ── Macro row ── */

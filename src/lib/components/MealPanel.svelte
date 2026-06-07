@@ -12,7 +12,6 @@
     <GroupCard {group} />
   {/each}
   <MealTotals {meal} />
-  <p class="footer-note">Tocca il nome di un alimento per vedere i macronutrienti</p>
 </div>
 
 <style>
