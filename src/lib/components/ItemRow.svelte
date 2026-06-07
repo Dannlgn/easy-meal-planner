@@ -20,11 +20,15 @@
   $: macroF    = macro ? ((macro.f / 100) * qty).toFixed(1) : '—';
   $: macroKcal = macro ? Math.round((macro.c / 100) * qty * 4 + (macro.p / 100) * qty * 4 + (macro.f / 100) * qty * 9) : null;
 
+  let invalid = false;
+
   function handleBlur(e: FocusEvent) {
-    const raw = (e.currentTarget as HTMLInputElement).value;
-    const val = Math.round(parseFloat(raw));
+    const el  = e.currentTarget as HTMLInputElement;
+    const val = Math.round(parseFloat(el.value));
     if (!Number.isFinite(val) || val <= 0) {
-      (e.currentTarget as HTMLInputElement).value = String(qty);
+      el.value = String(qty);
+      invalid = true;
+      setTimeout(() => { invalid = false; }, 600);
       return;
     }
     if (group.items.length <= 1) {
@@ -69,8 +73,11 @@
     <div class="qty-wrap">
       <input
         type="number"
-        inputmode="decimal"
+        inputmode="numeric"
+        min="1"
+        step="1"
         value={qty}
+        class:invalid
         aria-label="{item.name} grammi"
         on:blur={handleBlur}
         on:focus={handleFocus}
@@ -173,6 +180,16 @@
   input[type="number"]:focus {
     border-color: var(--accent);
     background: var(--acl);
+  }
+  input[type="number"].invalid {
+    border-color: #e53e3e;
+    background: #fff5f5;
+    animation: shake .3s ease;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%       { transform: translateX(-4px); }
+    75%       { transform: translateX(4px); }
   }
 
   .qty-unit {

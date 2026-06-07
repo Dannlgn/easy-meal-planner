@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { quantities, activePills, calcMealTotals } from '../stores/state';
+  import { quantities, calcMealTotals } from '../stores/state';
   import type { Meal } from '../types';
 
   export let meal: Meal;
 
-  $: raw    = calcMealTotals(meal, $quantities, $activePills);
+  $: raw    = calcMealTotals(meal, $quantities);
   $: totals = { c: raw.c.toFixed(1), p: raw.p.toFixed(1), f: raw.f.toFixed(1), kcal: Math.round(raw.kcal) };
 </script>
 

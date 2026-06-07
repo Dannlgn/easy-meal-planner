@@ -8,7 +8,6 @@ export interface FoodGroup {
   id: string;
   label: string;
   items: FoodItem[];
-  dualMain?: boolean;
 }
 
 export interface Meal {

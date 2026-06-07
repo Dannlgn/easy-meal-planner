@@ -121,7 +121,7 @@ export const MEALS: Meal[] = [
     id: 'pra', label: 'Pranzo',
     groups: [
       {
-        id: 'pra_carb', label: 'Carboidrati', dualMain: true,
+        id: 'pra_carb', label: 'Carboidrati',
         items: [
           { name: 'Pasta',              qty:  80, main: true },
           { name: 'Riso',               qty:  80 },
@@ -172,7 +172,7 @@ export const MEALS: Meal[] = [
     id: 'cen', label: 'Cena',
     groups: [
       {
-        id: 'cen_carb', label: 'Carboidrati', dualMain: true,
+        id: 'cen_carb', label: 'Carboidrati',
         items: [
           { name: 'Pasta',              qty:  80, main: true },
           { name: 'Riso',               qty:  80 },

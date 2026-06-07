@@ -1,22 +1,15 @@
 <script lang="ts">
   import ItemRow from './ItemRow.svelte';
-  import { activePills, resetGroup } from '../stores/state';
-  import { getMainIdx } from '../stores/state';
+  import { resetGroup, getMainIdx } from '../stores/state';
   import type { FoodGroup } from '../types';
 
   export let group: FoodGroup;
 
-  $: mainIdx = getMainIdx(group, $activePills);
+  $: mainIdx = getMainIdx(group);
 
-  // Separator appears after dual mains (idx 2) or after main item (idx mainIdx+1)
   function showSep(idx: number): boolean {
     if (group.items.length <= 1) return false;
-    if (group.dualMain) return idx === 2;
     return idx === mainIdx + 1;
-  }
-
-  function switchPill(p: number) {
-    activePills.update(pills => ({ ...pills, [group.id]: p }));
   }
 </script>
 
@@ -26,7 +19,7 @@
     <button class="btn-reset" on:click={() => resetGroup(group.id)}>↺ Reset</button>
   </div>
 
-{#each group.items as item, idx}
+  {#each group.items as item, idx}
     {#if showSep(idx)}
       <div class="item-sep"></div>
     {/if}
@@ -72,7 +65,7 @@
   }
   .btn-reset:active { background: rgba(255,255,255,.22); }
 
-.item-sep {
+  .item-sep {
     height: 0;
     border-bottom: 1.5px dashed var(--border);
     margin: 0 14px;

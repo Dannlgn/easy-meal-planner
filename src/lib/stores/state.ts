@@ -12,20 +12,24 @@ function initQtys(): Record<string, number[]> {
   return out;
 }
 
-function initPills(): Record<string, number> {
-  const out: Record<string, number> = {};
-  for (const meal of MEALS)
-    for (const g of meal.groups)
-      if (g.dualMain) out[g.id] = 0;
-  return out;
+function loadQtys(): Record<string, number[]> {
+  try {
+    const saved = localStorage.getItem('mp_quantities');
+    if (saved) return { ...initQtys(), ...JSON.parse(saved) };
+  } catch { /* ignore parse errors */ }
+  return initQtys();
 }
 
 // ── Stores ───────────────────────────────────────────────
-export const quantities    = writable<Record<string, number[]>>(initQtys());
-export const activePills   = writable<Record<string, number>>(initPills());
-export const activeMeal    = writable(0);
+export const quantities     = writable<Record<string, number[]>>(loadQtys());
+export const activeMeal     = writable(0);
 export const expandedMacros = writable(new Set<string>());
-export const flashSet      = writable(new Set<string>());
+export const flashSet       = writable(new Set<string>());
+
+// Persist quantities to localStorage on every change
+quantities.subscribe(v => {
+  try { localStorage.setItem('mp_quantities', JSON.stringify(v)); } catch { /* quota exceeded */ }
+});
 
 // ── Helpers ──────────────────────────────────────────────
 function findGroup(id: string): FoodGroup | undefined {
@@ -44,10 +48,6 @@ function triggerFlash(key: string) {
 
 // ── Mutations ────────────────────────────────────────────
 
-/**
- * Scale all items in a group proportionally.
- * Formula: newQty_i = originalQty_i * (newVal / originalQty_changed)
- */
 export function scaleGroup(groupId: string, changedIdx: number, newVal: number) {
   const group = findGroup(groupId);
   if (!group || newVal <= 0 || !Number.isFinite(newVal)) return;
@@ -66,7 +66,6 @@ export function scaleGroup(groupId: string, changedIdx: number, newVal: number) 
   });
 }
 
-/** Reset a group to its original quantities. */
 export function resetGroup(groupId: string) {
   const group = findGroup(groupId);
   if (!group) return;
@@ -76,17 +75,18 @@ export function resetGroup(groupId: string) {
 
   quantities.update(q => ({ ...q, [groupId]: origQtys }));
 
+  // Flash changed items; always flash the group header to confirm reset happened
+  let anyChanged = false;
   origQtys.forEach((oq, i) => {
-    if (oq !== currentQtys[i]) triggerFlash(`${groupId}_${i}`);
+    if (oq !== currentQtys[i]) { triggerFlash(`${groupId}_${i}`); anyChanged = true; }
   });
+  if (!anyChanged) origQtys.forEach((_, i) => triggerFlash(`${groupId}_${i}`));
 }
 
-/** Reset all groups in a meal. */
 export function resetMeal(mealIdx: number) {
   MEALS[mealIdx]?.groups.forEach(g => resetGroup(g.id));
 }
 
-/** Toggle the macro row for an item. */
 export function toggleMacro(key: string) {
   expandedMacros.update(s => {
     const n = new Set(s);
@@ -95,22 +95,15 @@ export function toggleMacro(key: string) {
   });
 }
 
-/** Return the active main index for a group. */
-export function getMainIdx(group: FoodGroup, pills: Record<string, number>): number {
-  if (group.dualMain) return pills[group.id] ?? 0;
+export function getMainIdx(group: FoodGroup): number {
   const i = group.items.findIndex(it => it.main);
   return i >= 0 ? i : 0;
 }
 
-/** Calculate macro + kcal totals for a single meal. */
-export function calcMealTotals(
-  meal: Meal,
-  qtys: Record<string, number[]>,
-  pills: Record<string, number>,
-) {
+export function calcMealTotals(meal: Meal, qtys: Record<string, number[]>) {
   let c = 0, p = 0, f = 0;
   for (const group of meal.groups) {
-    const mIdx  = getMainIdx(group, pills);
+    const mIdx  = getMainIdx(group);
     const item  = group.items[mIdx];
     const qty   = qtys[group.id]?.[mIdx] ?? item.qty;
     const macro = MACRO_DB[item.name];
