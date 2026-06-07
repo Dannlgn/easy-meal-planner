@@ -97,8 +97,8 @@ export const MEALS: Meal[] = [
       {
         id: 'pra_carb', label: 'Carboidrati', dualMain: true,
         items: [
-          { name: 'Pasta (media)',              qty:  80, main: true },
-          { name: 'Riso (media)',               qty:  80 },
+          { name: 'Pasta',              qty:  80, main: true },
+          { name: 'Riso',               qty:  80 },
           { name: 'Farro',                      qty:  80 },
           { name: 'Cous Cous',                  qty:  80 },
           { name: 'Orzo perlato',               qty:  80 },
@@ -148,8 +148,8 @@ export const MEALS: Meal[] = [
       {
         id: 'cen_carb', label: 'Carboidrati', dualMain: true,
         items: [
-          { name: 'Pasta (media)',              qty:  80, main: true },
-          { name: 'Riso (media)',               qty:  80 },
+          { name: 'Pasta',              qty:  80, main: true },
+          { name: 'Riso',               qty:  80 },
           { name: 'Farro',                      qty:  80 },
           { name: 'Cous Cous',                  qty:  80 },
           { name: 'Orzo perlato',               qty:  80 },

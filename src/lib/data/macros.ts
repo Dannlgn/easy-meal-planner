@@ -30,8 +30,8 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Marmellata':                       { c: 55.0, p:  0.5, f:  0.1 },
   'Miele':                            { c: 80.5, p:  0.3, f:  0.0 },
   // ── CARBOIDRATI Pranzo / Cena ──
-  'Pasta (media)':                    { c: 72.2, p: 13.0, f:  1.1 },
-  'Riso (media)':                     { c: 80.4, p:  6.7, f:  0.4 },
+  'Pasta':                    { c: 72.2, p: 13.0, f:  1.1 },
+  'Riso':                     { c: 80.4, p:  6.7, f:  0.4 },
   'Farro':                            { c: 67.0, p: 15.1, f:  2.5 },
   'Cous Cous':                        { c: 72.4, p: 12.8, f:  1.7 },
   'Orzo perlato':                     { c: 75.1, p: 10.0, f:  1.0 },

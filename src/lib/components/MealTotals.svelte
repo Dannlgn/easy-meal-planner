@@ -20,10 +20,12 @@
         f += (macro.f * qty) / 100;
       }
     }
+    const kcal = c * 4 + p * 4 + f * 9;
     return {
       c: c.toFixed(1),
       p: p.toFixed(1),
       f: f.toFixed(1),
+      kcal: Math.round(kcal),
     };
   }
 </script>
@@ -31,6 +33,10 @@
 <div class="meal-totals">
   <div class="totals-label">Totale<br>pasto</div>
   <div class="totals-grid">
+    <div class="tot-item">
+      <div class="tot-val kcal-color">{totals.kcal}</div>
+      <div class="tot-lbl">kcal</div>
+    </div>
     <div class="tot-item">
       <div class="tot-val mc-color">{totals.c}g</div>
       <div class="tot-lbl">Carb</div>
@@ -90,6 +96,7 @@
     margin-top: 2px;
   }
 
+  .kcal-color { color: var(--text); }
   .mc-color { color: var(--mc); }
   .mp-color { color: var(--mp); }
   .mf-color { color: var(--mf); }
