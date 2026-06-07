@@ -3,6 +3,7 @@
   import MealPanel from './lib/components/MealPanel.svelte';
   import DailyTotals from './lib/components/DailyTotals.svelte';
   import StickyTotals from './lib/components/StickyTotals.svelte';
+  import Onboarding from './lib/components/Onboarding.svelte';
   import { activeMeal } from './lib/stores/state';
   import { MEALS } from './lib/data/meals';
 </script>
@@ -17,3 +18,4 @@
 </main>
 
 <StickyTotals />
+<Onboarding />

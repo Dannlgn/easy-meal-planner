@@ -1,0 +1,19 @@
+{
+  "name": "Piano Alimentare",
+  "short_name": "Meal Plan",
+  "description": "Piano alimentare personalizzabile con scaling proporzionale e macronutrienti",
+  "theme_color": "#1a3a5c",
+  "background_color": "#f0f4f8",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/easy-meal-planner/",
+  "scope": "/easy-meal-planner/",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1a3a5c"/>
+  <!-- Fork -->
+  <rect x="148" y="110" width="20" height="160" rx="10" fill="#fff"/>
+  <rect x="128" y="110" width="20" height="80" rx="8" fill="#fff"/>
+  <rect x="168" y="110" width="20" height="80" rx="8" fill="#fff"/>
+  <rect x="148" y="270" width="20" height="130" rx="10" fill="#fff"/>
+  <!-- Plate with food -->
+  <circle cx="310" cy="256" r="110" fill="none" stroke="#2196F3" stroke-width="14"/>
+  <circle cx="310" cy="256" r="80" fill="#2196F3" opacity=".18"/>
+  <!-- C arc (orange) -->
+  <path d="M335 196 A70 70 0 1 0 335 316" fill="none" stroke="#FF9800" stroke-width="14" stroke-linecap="round"/>
+  <!-- P line (blue) -->
+  <rect x="348" y="218" width="14" height="76" rx="7" fill="#2196F3"/>
+  <path d="M348 218 Q400 218 400 248 Q400 278 348 278" fill="none" stroke="#2196F3" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
