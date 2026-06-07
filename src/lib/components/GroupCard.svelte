@@ -1,16 +1,14 @@
 <script lang="ts">
   import ItemRow from './ItemRow.svelte';
-  import { mainItems, resetGroup, getMainIdx, smartSwapEnabled, toggleSmartSwap } from '../stores/state';
+  import { mainItems, resetGroup, getMainIdx } from '../stores/state';
   import type { FoodGroup } from '../types';
 
   export let group: FoodGroup;
 
-  $: mainIdx  = getMainIdx(group, $mainItems);
-  $: smartOn  = ($smartSwapEnabled[group.id] ?? true);
-  $: multiItem = group.items.length > 1;
+  $: mainIdx = getMainIdx(group, $mainItems);
 
   function showSep(idx: number): boolean {
-    if (!multiItem) return false;
+    if (group.items.length <= 1) return false;
     return idx === mainIdx + 1;
   }
 </script>
@@ -19,16 +17,6 @@
   <div class="group-header">
     <div class="header-left">
       <span class="group-title">{group.label}</span>
-      {#if multiItem}
-        <button
-          class="swap-toggle"
-          class:on={smartOn}
-          on:click={() => toggleSmartSwap(group.id)}
-          title={smartOn ? 'Smart Swap attivo — grammatura ottimizzata automaticamente' : 'Modalità manuale — scaling proporzionale'}
-        >
-          {#if smartOn}⚡ Smart Swap{:else}↕ Proporzionale{/if}
-        </button>
-      {/if}
     </div>
     <button class="btn-reset" on:click={() => resetGroup(group.id)}>↺ Reset</button>
   </div>
@@ -74,29 +62,6 @@
     letter-spacing: .7px;
     opacity: .88;
   }
-
-  .swap-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding: 2px 8px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,.25);
-    background: rgba(255,255,255,.10);
-    color: rgba(255,255,255,.65);
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: .3px;
-    cursor: pointer;
-    transition: background .15s, color .15s;
-    align-self: flex-start;
-  }
-  .swap-toggle.on {
-    background: rgba(255,255,255,.20);
-    color: #fff;
-    border-color: rgba(255,255,255,.45);
-  }
-  .swap-toggle:active { opacity: .8; }
 
   .btn-reset {
     background: rgba(255,255,255,.12);

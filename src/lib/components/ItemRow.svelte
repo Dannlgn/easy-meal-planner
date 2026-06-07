@@ -1,7 +1,7 @@
 <script lang="ts">
   import {
-    quantities, flashSet, toggleMacro, expandedMacros, scaleGroup, setMain,
-    smartBadge, smartTargets, calcMatchScore, clearSmartBadge, smartSwapEnabled,
+    quantities, flashSet, toggleMacro, expandedMacros, setMain,
+    smartBadge, smartTargets, calcMatchScore, clearSmartBadge,
   } from '../stores/state';
   import { MACRO_DB } from '../data/macros';
   import type { FoodGroup, FoodItem } from '../types';
@@ -64,18 +64,11 @@
     // Manual edit → clear smart badge
     if (val !== qty) clearSmartBadge(key);
 
-    const smartOn = $smartSwapEnabled[group.id] ?? true;
-    // Smart Swap mode: edit only this item (no proportional cascade to other items)
-    // Proporzionale mode: scale all items in the group proportionally
-    if (val === 0 || group.items.length <= 1 || smartOn) {
-      quantities.update(q => {
-        const arr = [...(q[group.id] ?? group.items.map(i => i.qty))];
-        arr[idx] = val;
-        return { ...q, [group.id]: arr };
-      });
-    } else {
-      scaleGroup(group.id, idx, val);
-    }
+    quantities.update(q => {
+      const arr = [...(q[group.id] ?? group.items.map(i => i.qty))];
+      arr[idx] = val;
+      return { ...q, [group.id]: arr };
+    });
   }
 
   function handleKeydown(e: KeyboardEvent) {

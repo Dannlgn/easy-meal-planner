@@ -38,14 +38,6 @@ function loadMains(): Record<string, number> {
   return initMains();
 }
 
-function loadSmartEnabled(): Record<string, boolean> {
-  try {
-    const saved = localStorage.getItem('mp_smart');
-    if (saved) return JSON.parse(saved);
-  } catch { /* ignore */ }
-  return {};
-}
-
 // ── Stores ───────────────────────────────────────────────
 export const quantities     = writable<Record<string, number[]>>(loadQtys());
 export const mainItems      = writable<Record<string, number>>(loadMains());
@@ -55,9 +47,8 @@ export const flashSet       = writable(new Set<string>());
 
 // Smart Swap
 export type SmartTarget = { kcal: number; c: number; p: number; f: number };
-export const smartSwapEnabled = writable<Record<string, boolean>>(loadSmartEnabled());
-export const smartBadge       = writable(new Set<string>());
-export const smartTargets     = writable<Record<string, SmartTarget>>({});
+export const smartBadge   = writable(new Set<string>());
+export const smartTargets = writable<Record<string, SmartTarget>>({});
 
 quantities.subscribe(v => {
   try { localStorage.setItem('mp_quantities', JSON.stringify(v)); } catch { /* quota */ }
@@ -65,10 +56,6 @@ quantities.subscribe(v => {
 mainItems.subscribe(v => {
   try { localStorage.setItem('mp_mains', JSON.stringify(v)); } catch { /* quota */ }
 });
-smartSwapEnabled.subscribe(v => {
-  try { localStorage.setItem('mp_smart', JSON.stringify(v)); } catch { /* quota */ }
-});
-
 // ── Helpers ──────────────────────────────────────────────
 function findGroup(id: string): FoodGroup | undefined {
   for (const meal of MEALS) {
@@ -188,10 +175,6 @@ export function toggleMacro(key: string) {
   });
 }
 
-export function toggleSmartSwap(groupId: string) {
-  smartSwapEnabled.update(m => ({ ...m, [groupId]: !(m[groupId] ?? true) }));
-}
-
 export function clearSmartBadge(key: string) {
   smartBadge.update(s => { const n = new Set(s); n.delete(key); return n; });
 }
@@ -204,9 +187,7 @@ export function setMain(groupId: string, idx: number) {
 
   if (currentMainIdx === idx) return;
 
-  const smartOn = get(smartSwapEnabled)[groupId] ?? true;
-
-  if (smartOn && group) {
+  if (group) {
     const currentQtys = get(quantities);
     const currentMainItem = group.items[currentMainIdx];
     const currentQty = currentQtys[groupId]?.[currentMainIdx] ?? currentMainItem.qty;
