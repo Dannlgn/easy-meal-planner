@@ -1,6 +1,7 @@
 import { writable, get } from 'svelte/store';
 import { MEALS } from '../data/meals';
-import type { FoodGroup } from '../types';
+import { MACRO_DB } from '../data/macros';
+import type { FoodGroup, Meal } from '../types';
 
 // ── Initializers ──────────────────────────────────────────
 function initQtys(): Record<string, number[]> {
@@ -99,4 +100,25 @@ export function getMainIdx(group: FoodGroup, pills: Record<string, number>): num
   if (group.dualMain) return pills[group.id] ?? 0;
   const i = group.items.findIndex(it => it.main);
   return i >= 0 ? i : 0;
+}
+
+/** Calculate macro + kcal totals for a single meal. */
+export function calcMealTotals(
+  meal: Meal,
+  qtys: Record<string, number[]>,
+  pills: Record<string, number>,
+) {
+  let c = 0, p = 0, f = 0;
+  for (const group of meal.groups) {
+    const mIdx  = getMainIdx(group, pills);
+    const item  = group.items[mIdx];
+    const qty   = qtys[group.id]?.[mIdx] ?? item.qty;
+    const macro = MACRO_DB[item.name];
+    if (macro) {
+      c += (macro.c * qty) / 100;
+      p += (macro.p * qty) / 100;
+      f += (macro.f * qty) / 100;
+    }
+  }
+  return { c, p, f, kcal: c * 4 + p * 4 + f * 9 };
 }

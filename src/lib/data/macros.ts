@@ -51,7 +51,7 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Seitan al Naturale':               { c: 12.0, p: 24.0, f:  1.5 },
   // ── CENA — Proteico ──
   'Uova di gallina (media)':          { c:  0.5, p: 12.4, f: 10.3 },
-  'Fiocchi di Latte':                 { c:  3.6, p: 10.7, f:  4.0 },
+  'Fiocchi di Latte':                 { c:  3.2, p:  9.7, f:  7.1 },
   'Mozzarella high protein benessere':{ c:  2.0, p: 18.0, f: 14.0 },
   'Ricotta high protein benessere':   { c:  4.0, p: 12.0, f:  8.0 },
   'Parmigiano':                       { c:  0.0, p: 33.0, f: 29.0 },
@@ -60,6 +60,17 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Tofu al naturale':                 { c:  1.9, p:  8.1, f:  4.8 },
   'Salmone':                          { c:  0.0, p: 20.1, f: 12.8 },
   "Tonno all'olio d'oliva sgocciolato": { c: 0.0, p: 25.2, f: 8.1 },
+  // ── FRUTTA (fonte: tabelle CREA) ──
+  'Mela':                             { c: 10.0, p:  0.2, f:  0.1 },
+  'Banana':                           { c: 17.4, p:  1.2, f:  0.3 },
+  'Pera':                             { c: 12.7, p:  0.2, f:  0.3 },
+  'Arancia':                          { c:  7.8, p:  0.7, f:  0.2 },
+  'Pesca':                            { c:  5.8, p:  0.7, f:  0.1 },
+  'Fragola':                          { c:  5.3, p:  0.9, f:  0.4 },
+  'Uva':                              { c: 15.6, p:  0.5, f:  0.1 },
+  'Kiwi':                             { c:  9.0, p:  1.2, f:  0.6 },
+  'Ananas':                           { c: 10.0, p:  0.5, f:  0.0 },
+  'Mandarino':                        { c: 17.6, p:  0.9, f:  0.3 },
   // ── VERDURA / GRASSI ──
   'Verdura':                          { c:  4.7, p:  1.9, f:  0.3 },
   'Insalata':                         { c:  2.2, p:  1.3, f:  0.2 },

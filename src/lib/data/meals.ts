@@ -28,6 +28,22 @@ export const MEALS: Meal[] = [
         items: [
           { name: 'Yogurt greco magro 0% bianco', qty: 250, main: true },
           { name: 'Skyr bianco',                  qty: 250 },
+          { name: 'Fiocchi di Latte',              qty: 200 },
+        ],
+      },
+      {
+        id: 'col_fru', label: 'Frutta',
+        items: [
+          { name: 'Mela',      qty: 150, main: true },
+          { name: 'Banana',    qty: 100 },
+          { name: 'Pera',      qty: 150 },
+          { name: 'Arancia',   qty: 150 },
+          { name: 'Pesca',     qty: 150 },
+          { name: 'Fragola',   qty: 150 },
+          { name: 'Uva',       qty: 100 },
+          { name: 'Kiwi',      qty: 100 },
+          { name: 'Ananas',    qty: 150 },
+          { name: 'Mandarino', qty: 100 },
         ],
       },
       {
@@ -74,6 +90,7 @@ export const MEALS: Meal[] = [
         items: [
           { name: 'Yogurt greco magro 0% bianco', qty: 250, main: true },
           { name: 'Skyr bianco',                  qty: 250 },
+          { name: 'Fiocchi di Latte',              qty: 200 },
           { name: 'Whey Protein – Concentrate',   qty:  30 },
           { name: 'Uova di gallina – albume',     qty: 250 },
           { name: 'Affettato – Fesa di Tacchino', qty: 130 },
@@ -82,7 +99,16 @@ export const MEALS: Meal[] = [
       {
         id: 'spu_fru', label: 'Frutta',
         items: [
-          { name: 'Frutta fresca',                    qty: 150, main: true },
+          { name: 'Mela',      qty: 150, main: true },
+          { name: 'Banana',    qty: 100 },
+          { name: 'Pera',      qty: 150 },
+          { name: 'Arancia',   qty: 150 },
+          { name: 'Pesca',     qty: 150 },
+          { name: 'Fragola',   qty: 150 },
+          { name: 'Uva',       qty: 100 },
+          { name: 'Kiwi',      qty: 100 },
+          { name: 'Ananas',    qty: 150 },
+          { name: 'Mandarino', qty: 100 },
           { name: 'Pura Frutta Frullata – Valfrutta', qty: 100 },
           { name: 'Marmellata',                       qty:  30 },
           { name: 'Miele',                            qty:  20 },

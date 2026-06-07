@@ -1,33 +1,11 @@
 <script lang="ts">
-  import { quantities, activePills, getMainIdx } from '../stores/state';
-  import { MACRO_DB } from '../data/macros';
+  import { quantities, activePills, calcMealTotals } from '../stores/state';
   import type { Meal } from '../types';
 
   export let meal: Meal;
 
-  $: totals = calcTotals($quantities, $activePills);
-
-  function calcTotals(qtys: Record<string, number[]>, pills: Record<string, number>) {
-    let c = 0, p = 0, f = 0;
-    for (const group of meal.groups) {
-      const mIdx  = getMainIdx(group, pills);
-      const item  = group.items[mIdx];
-      const qty   = qtys[group.id]?.[mIdx] ?? item.qty;
-      const macro = MACRO_DB[item.name];
-      if (macro) {
-        c += (macro.c * qty) / 100;
-        p += (macro.p * qty) / 100;
-        f += (macro.f * qty) / 100;
-      }
-    }
-    const kcal = c * 4 + p * 4 + f * 9;
-    return {
-      c: c.toFixed(1),
-      p: p.toFixed(1),
-      f: f.toFixed(1),
-      kcal: Math.round(kcal),
-    };
-  }
+  $: raw    = calcMealTotals(meal, $quantities, $activePills);
+  $: totals = { c: raw.c.toFixed(1), p: raw.p.toFixed(1), f: raw.f.toFixed(1), kcal: Math.round(raw.kcal) };
 </script>
 
 <div class="meal-totals">
