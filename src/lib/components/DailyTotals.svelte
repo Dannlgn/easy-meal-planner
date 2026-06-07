@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { quantities, calcMealTotals } from '../stores/state';
+  import { quantities, mainItems, calcMealTotals } from '../stores/state';
   import { MEALS } from '../data/meals';
 
   $: totals = (() => {
     let c = 0, p = 0, f = 0, kcal = 0;
     for (const meal of MEALS) {
-      const t = calcMealTotals(meal, $quantities);
+      const t = calcMealTotals(meal, $quantities, $mainItems);
       c    += t.c;
       p    += t.p;
       f    += t.f;

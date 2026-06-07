@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { quantities, calcMealTotals } from '../stores/state';
+  import { quantities, mainItems, calcMealTotals } from '../stores/state';
   import type { Meal } from '../types';
 
   export let meal: Meal;
 
-  $: raw    = calcMealTotals(meal, $quantities);
+  $: raw    = calcMealTotals(meal, $quantities, $mainItems);
   $: totals = { c: raw.c.toFixed(1), p: raw.p.toFixed(1), f: raw.f.toFixed(1), kcal: Math.round(raw.kcal) };
 </script>
 
@@ -32,7 +32,7 @@
 
 <style>
   .meal-totals {
-    background: var(--card);
+    background: #f0f7ff;
     border-radius: var(--r);
     box-shadow: var(--sh);
     padding: 12px 16px;
@@ -40,6 +40,7 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    border-top: 3px solid var(--accent);
   }
 
   .totals-label {
@@ -47,7 +48,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .6px;
-    color: var(--muted);
+    color: var(--accent);
     white-space: nowrap;
     line-height: 1.4;
   }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { quantities, flashSet, toggleMacro, expandedMacros, scaleGroup } from '../stores/state';
+  import { quantities, flashSet, toggleMacro, expandedMacros, scaleGroup, setMain } from '../stores/state';
   import { MACRO_DB } from '../data/macros';
   import type { FoodGroup, FoodItem } from '../types';
 
@@ -65,6 +65,16 @@
 
 <div class="item-row" class:is-main={isMain} class:updated={flashing}>
   <div class="item-main-line">
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+    <div
+      class="radio-indicator"
+      class:active={isMain}
+      on:click={() => !isMain && group.items.length > 1 && setMain(group.id, idx)}
+      title={isMain ? 'Alimento selezionato per i totali' : 'Seleziona come principale'}
+    >
+      {#if isMain}<span class="radio-dot"></span>{/if}
+    </div>
+
     <div class="name-wrap">
       <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
       <span
@@ -77,9 +87,6 @@
           <span class="chv" class:open={expanded}>▶</span>
         {/if}
       </span>
-      {#if isMain}
-        <span class="badge-main">principale</span>
-      {/if}
     </div>
 
     <div class="qty-wrap">
@@ -127,9 +134,32 @@
   .item-main-line {
     display: flex;
     align-items: center;
-    padding: 9px 14px;
-    gap: 10px;
+    padding: 9px 14px 9px 10px;
+    gap: 8px;
     min-height: 46px;
+  }
+
+  .radio-indicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .15s;
+    cursor: pointer;
+  }
+  .radio-indicator.active {
+    border-color: var(--accent);
+    background: var(--acl);
+  }
+  .radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
   }
 
   .name-wrap {
@@ -164,20 +194,7 @@
   }
   .chv.open { transform: rotate(90deg); }
 
-  .badge-main {
-    background: var(--accent);
-    color: #fff;
-    font-size: 9px;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 6px;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .qty-wrap {
+.qty-wrap {
     display: flex;
     align-items: center;
     gap: 4px;

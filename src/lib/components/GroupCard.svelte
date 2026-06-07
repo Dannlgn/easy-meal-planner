@@ -1,11 +1,11 @@
 <script lang="ts">
   import ItemRow from './ItemRow.svelte';
-  import { resetGroup, getMainIdx } from '../stores/state';
+  import { mainItems, resetGroup, getMainIdx } from '../stores/state';
   import type { FoodGroup } from '../types';
 
   export let group: FoodGroup;
 
-  $: mainIdx = getMainIdx(group);
+  $: mainIdx = getMainIdx(group, $mainItems);
 
   function showSep(idx: number): boolean {
     if (group.items.length <= 1) return false;
@@ -15,7 +15,12 @@
 
 <div class="group-card">
   <div class="group-header">
-    <span class="group-title">{group.label}</span>
+    <div class="header-left">
+      <span class="group-title">{group.label}</span>
+      {#if group.items.length > 1}
+        <span class="scale-hint">↕ scala proporzionalmente</span>
+      {/if}
+    </div>
     <button class="btn-reset" on:click={() => resetGroup(group.id)}>↺ Reset</button>
   </div>
 
@@ -43,6 +48,14 @@
     padding: 10px 14px;
     background: var(--hdr2);
     color: #fff;
+    gap: 8px;
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
   }
 
   .group-title {
@@ -51,6 +64,13 @@
     text-transform: uppercase;
     letter-spacing: .7px;
     opacity: .88;
+  }
+
+  .scale-hint {
+    font-size: 9px;
+    font-weight: 500;
+    opacity: .55;
+    letter-spacing: .2px;
   }
 
   .btn-reset {
@@ -62,6 +82,7 @@
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
+    flex-shrink: 0;
   }
   .btn-reset:active { background: rgba(255,255,255,.22); }
 
