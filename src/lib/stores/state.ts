@@ -45,17 +45,13 @@ export const activeMeal     = writable(0);
 export const expandedMacros = writable(new Set<string>());
 export const flashSet       = writable(new Set<string>());
 
-// Smart Swap
-export type SmartTarget = { kcal: number; c: number; p: number; f: number };
-export const smartBadge   = writable(new Set<string>());
-export const smartTargets = writable<Record<string, SmartTarget>>({});
-
 quantities.subscribe(v => {
   try { localStorage.setItem('mp_quantities', JSON.stringify(v)); } catch { /* quota */ }
 });
 mainItems.subscribe(v => {
   try { localStorage.setItem('mp_mains', JSON.stringify(v)); } catch { /* quota */ }
 });
+
 // ── Helpers ──────────────────────────────────────────────
 function findGroup(id: string): FoodGroup | undefined {
   for (const meal of MEALS) {
@@ -71,7 +67,9 @@ function triggerFlash(key: string) {
   }, 800);
 }
 
-// Weights biased toward the dominant macro energy contribution in the target
+type SmartTarget = { kcal: number; c: number; p: number; f: number };
+
+// Weights biased toward the dominant macro energy contribution
 function getWeights(target: SmartTarget) {
   const cKcal = target.c * 4, pKcal = target.p * 4, fKcal = target.f * 9;
   const total = cKcal + pKcal + fKcal;
@@ -83,7 +81,7 @@ function getWeights(target: SmartTarget) {
   return                                        { wKcal: 0.2, wC: 0.1, wP: 0.1, wF: 0.6 };
 }
 
-function calcSmartQtyInternal(target: SmartTarget, substituteName: string): number {
+function calcSmartQty(target: SmartTarget, substituteName: string): number {
   const sub = MACRO_DB[substituteName];
   if (!sub) return 50;
 
@@ -103,44 +101,33 @@ function calcSmartQtyInternal(target: SmartTarget, substituteName: string): numb
   return Math.max(5, Math.min(x, 500));
 }
 
-/** Match score 0–100 between a substitute at `qty` grams and the target nutritional profile. */
-export function calcMatchScore(qty: number, name: string, target: SmartTarget): number {
-  const sub = MACRO_DB[name];
-  if (!sub || !qty) return 0;
+/** Recalculate every non-main item in a group to be nutritionally equivalent to the current main. */
+export function recalcGroupFromMain(groupId: string) {
+  const group = findGroup(groupId);
+  if (!group) return;
 
-  const { wKcal, wC, wP, wF } = getWeights(target);
-  const sKcal = (sub.c * 4 + sub.p * 4 + sub.f * 9) / 100 * qty;
-  const sC = sub.c / 100 * qty;
-  const sP = sub.p / 100 * qty;
-  const sF = sub.f / 100 * qty;
+  const mainIdx  = getMainIdx(group, get(mainItems));
+  const mainItem = group.items[mainIdx];
+  const mainQty  = get(quantities)[groupId]?.[mainIdx] ?? mainItem.qty;
+  const mainMacro = MACRO_DB[mainItem.name];
 
-  const cost    = wKcal * (sKcal - target.kcal)**2 + wC * (sC - target.c)**2 +
-                  wP * (sP - target.p)**2 + wF * (sF - target.f)**2;
-  const maxCost = wKcal * target.kcal**2 + wC * target.c**2 + wP * target.p**2 + wF * target.f**2;
+  if (!mainMacro || mainQty <= 0) return;
 
-  if (!maxCost) return 100;
-  return Math.max(0, Math.round(100 * (1 - cost / maxCost)));
+  const tC = (mainMacro.c / 100) * mainQty;
+  const tP = (mainMacro.p / 100) * mainQty;
+  const tF = (mainMacro.f / 100) * mainQty;
+  const target: SmartTarget = { c: tC, p: tP, f: tF, kcal: tC * 4 + tP * 4 + tF * 9 };
+
+  quantities.update(q => {
+    const arr = [...(q[groupId] ?? group.items.map(i => i.qty))];
+    group.items.forEach((item, i) => {
+      if (i !== mainIdx) arr[i] = calcSmartQty(target, item.name);
+    });
+    return { ...q, [groupId]: arr };
+  });
 }
 
 // ── Mutations ────────────────────────────────────────────
-
-export function scaleGroup(groupId: string, changedIdx: number, newVal: number) {
-  const group = findGroup(groupId);
-  if (!group || newVal <= 0 || !Number.isFinite(newVal)) return;
-
-  const origChanged = group.items[changedIdx].qty;
-  if (origChanged === 0) return;
-
-  const scaleFactor = newVal / origChanged;
-  const currentQtys = get(quantities)[groupId] ?? group.items.map(i => i.qty);
-  const newQtys = group.items.map(item => Math.round(item.qty * scaleFactor));
-
-  quantities.update(q => ({ ...q, [groupId]: newQtys }));
-
-  newQtys.forEach((nq, i) => {
-    if (nq !== currentQtys[i]) triggerFlash(`${groupId}_${i}`);
-  });
-}
 
 export function resetGroup(groupId: string) {
   const group = findGroup(groupId);
@@ -150,11 +137,6 @@ export function resetGroup(groupId: string) {
   const origQtys = group.items.map(i => i.qty);
 
   quantities.update(q => ({ ...q, [groupId]: origQtys }));
-
-  // Clear smart state on reset
-  const mainIdx = get(mainItems)[groupId] ?? 0;
-  smartBadge.update(s => { const n = new Set(s); n.delete(`${groupId}_${mainIdx}`); return n; });
-  smartTargets.update(t => { const n = { ...t }; delete n[groupId]; return n; });
 
   let anyChanged = false;
   origQtys.forEach((oq, i) => {
@@ -175,50 +157,15 @@ export function toggleMacro(key: string) {
   });
 }
 
-export function clearSmartBadge(key: string) {
-  smartBadge.update(s => { const n = new Set(s); n.delete(key); return n; });
-}
-
-/** Set the active (main) item for a group. Applies Smart Swap if enabled. */
+/** Switch the main item and recalculate all others to be nutritionally equivalent. */
 export function setMain(groupId: string, idx: number) {
   const group = findGroup(groupId);
-  const currentMains = get(mainItems);
-  const currentMainIdx = getMainIdx(group!, currentMains);
-
-  if (currentMainIdx === idx) return;
-
-  if (group) {
-    const currentQtys = get(quantities);
-    const currentMainItem = group.items[currentMainIdx];
-    const currentQty = currentQtys[groupId]?.[currentMainIdx] ?? currentMainItem.qty;
-    const targetMacro = MACRO_DB[currentMainItem.name];
-
-    if (targetMacro && currentQty > 0) {
-      const tC = (targetMacro.c / 100) * currentQty;
-      const tP = (targetMacro.p / 100) * currentQty;
-      const tF = (targetMacro.f / 100) * currentQty;
-      const target: SmartTarget = { c: tC, p: tP, f: tF, kcal: tC * 4 + tP * 4 + tF * 9 };
-
-      const optimalQty = calcSmartQtyInternal(target, group.items[idx].name);
-
-      smartTargets.update(t => ({ ...t, [groupId]: target }));
-      smartBadge.update(s => {
-        const n = new Set(s);
-        n.delete(`${groupId}_${currentMainIdx}`);
-        n.add(`${groupId}_${idx}`);
-        return n;
-      });
-
-      quantities.update(q => {
-        const arr = [...(q[groupId] ?? group.items.map(i => i.qty))];
-        arr[idx] = optimalQty;
-        return { ...q, [groupId]: arr };
-      });
-    }
-  }
+  if (!group) return;
+  if (getMainIdx(group, get(mainItems)) === idx) return;
 
   mainItems.update(m => ({ ...m, [groupId]: idx }));
   triggerFlash(`${groupId}_${idx}`);
+  recalcGroupFromMain(groupId);
 }
 
 export function getMainIdx(group: FoodGroup, mains: Record<string, number>): number {
