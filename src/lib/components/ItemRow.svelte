@@ -1,5 +1,8 @@
 <script lang="ts">
-  import { quantities, flashSet, toggleMacro, expandedMacros, scaleGroup, setMain } from '../stores/state';
+  import {
+    quantities, flashSet, toggleMacro, expandedMacros, scaleGroup, setMain,
+    smartBadge, smartTargets, calcMatchScore, clearSmartBadge,
+  } from '../stores/state';
   import { MACRO_DB } from '../data/macros';
   import type { FoodGroup, FoodItem } from '../types';
 
@@ -14,11 +17,36 @@
   $: key      = `${group.id}_${idx}`;
   $: expanded = $expandedMacros.has(key);
   $: flashing = $flashSet.has(key);
+  $: isSmart  = isMain && $smartBadge.has(key);
 
   $: macroC    = macro ? ((macro.c / 100) * qty).toFixed(1) : '—';
   $: macroP    = macro ? ((macro.p / 100) * qty).toFixed(1) : '—';
   $: macroF    = macro ? ((macro.f / 100) * qty).toFixed(1) : '—';
   $: macroKcal = macro ? Math.round((macro.c / 100) * qty * 4 + (macro.p / 100) * qty * 4 + (macro.f / 100) * qty * 9) : null;
+
+  // Smart Swap delta
+  $: smartTarget = isSmart ? $smartTargets[group.id] : null;
+  $: matchScore  = smartTarget ? calcMatchScore(qty, item.name, smartTarget) : null;
+  $: deltaC      = smartTarget && macro ? +((macro.c / 100) * qty - smartTarget.c).toFixed(1) : null;
+  $: deltaP      = smartTarget && macro ? +((macro.p / 100) * qty - smartTarget.p).toFixed(1) : null;
+  $: deltaF      = smartTarget && macro ? +((macro.f / 100) * qty - smartTarget.f).toFixed(1) : null;
+  $: deltaKcal   = smartTarget && macroKcal !== null ? macroKcal - Math.round(smartTarget.kcal) : null;
+  $: lowQtyWarn  = isSmart && qty > 0 && qty < 15;
+  $: scoreColor  = matchScore === null ? '' : matchScore >= 90 ? '#22c55e' : matchScore >= 70 ? '#f59e0b' : '#ef4444';
+
+  function fmtDelta(d: number | null, dp = 1): string {
+    if (d === null) return '';
+    if (Math.abs(d) < (dp === 0 ? 0.5 : 0.05)) return '=';
+    return (d > 0 ? '+' : '') + (dp === 0 ? String(Math.round(d)) : d.toFixed(dp));
+  }
+
+  function deltaColor(d: number | null, target: number): string {
+    if (d === null || !target) return 'var(--text)';
+    const pct = Math.abs(d) / Math.abs(target);
+    if (pct <= 0.05) return '#22c55e';
+    if (pct <= 0.15) return '#f59e0b';
+    return '#ef4444';
+  }
 
   let invalid = false;
   let focused = false;
@@ -33,7 +61,9 @@
       setTimeout(() => { invalid = false; }, 600);
       return;
     }
-    // val === 0: zero out only this item (no proportional scaling)
+    // Manual edit → clear smart badge
+    if (val !== qty) clearSmartBadge(key);
+
     if (val === 0 || group.items.length <= 1) {
       quantities.update(q => {
         const arr = [...(q[group.id] ?? group.items.map(i => i.qty))];
@@ -106,6 +136,8 @@
       />
       {#if focused}
         <button class="btn-confirm" on:mousedown|preventDefault={confirmValue} aria-label="Conferma">✓</button>
+      {:else if isSmart}
+        <span class="badge-smart" title="Grammatura calcolata da Smart Swap">⚡</span>
       {:else}
         <span class="qty-unit">gr</span>
       {/if}
@@ -118,6 +150,31 @@
       <span class="macro-pill mc">C <b>{macroC}</b>g</span>
       <span class="macro-pill mp">P <b>{macroP}</b>g</span>
       <span class="macro-pill mf">G <b>{macroF}</b>g</span>
+    </div>
+  {/if}
+
+  {#if isSmart && smartTarget}
+    <div class="smart-row">
+      {#if lowQtyWarn}
+        <span class="low-warn">⚠ Grammatura molto bassa — verifica</span>
+      {:else}
+        <span class="match-badge" style="color: {scoreColor}">≈ {matchScore}% match</span>
+        {#if deltaC !== null}
+          <span class="delta-sep">|</span>
+          <span class="delta-val" style="color: {deltaColor(deltaC, smartTarget.c)}">
+            C {fmtDelta(deltaC)}{Math.abs(deltaC ?? 0) >= 0.05 ? 'g' : ''}
+          </span>
+          <span class="delta-val" style="color: {deltaColor(deltaP, smartTarget.p)}">
+            P {fmtDelta(deltaP)}{Math.abs(deltaP ?? 0) >= 0.05 ? 'g' : ''}
+          </span>
+          <span class="delta-val" style="color: {deltaColor(deltaF, smartTarget.f)}">
+            G {fmtDelta(deltaF)}{Math.abs(deltaF ?? 0) >= 0.05 ? 'g' : ''}
+          </span>
+          <span class="delta-val" style="color: {deltaColor(deltaKcal, smartTarget.kcal)}">
+            kcal {fmtDelta(deltaKcal, 0)}
+          </span>
+        {/if}
+      {/if}
     </div>
   {/if}
 </div>
@@ -197,7 +254,7 @@
   }
   .chv.open { transform: rotate(90deg); }
 
-.qty-wrap {
+  .qty-wrap {
     display: flex;
     align-items: center;
     gap: 4px;
@@ -245,6 +302,13 @@
     text-align: left;
   }
 
+  .badge-smart {
+    font-size: 14px;
+    width: 22px;
+    text-align: center;
+    cursor: default;
+  }
+
   .btn-confirm {
     width: 28px;
     height: 28px;
@@ -278,6 +342,34 @@
   .macro-pill.mc { color: var(--mc); }
   .macro-pill.mp { color: var(--mp); }
   .macro-pill.mf { color: var(--mf); }
+
+  /* ── Smart delta row ── */
+  .smart-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 14px 8px 46px;
+    font-size: 11px;
+  }
+
+  .match-badge {
+    font-weight: 700;
+  }
+
+  .delta-sep {
+    color: var(--border);
+    font-size: 10px;
+  }
+
+  .delta-val {
+    font-weight: 600;
+  }
+
+  .low-warn {
+    color: #f59e0b;
+    font-weight: 600;
+  }
 
   /* ── Flash animation ── */
   @keyframes flash {
