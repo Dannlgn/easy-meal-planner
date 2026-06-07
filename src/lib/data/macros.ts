@@ -15,10 +15,10 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Burro di Mandorle':                { c: 19.7, p: 21.2, f: 55.8 },
   'Yogurt greco magro 0% bianco':     { c:  3.6, p: 10.0, f:  0.4 },
   'Skyr bianco':                      { c:  4.0, p: 11.0, f:  0.2 },
-  'Latte intero':                     { c:  4.7, p:  3.3, f:  3.6 },
-  'Latte parzialmente scremato':      { c:  5.0, p:  3.3, f:  1.6 },
-  'Latte scremato':                   { c:  4.9, p:  3.6, f:  0.2 },
-  'Latte senza lattosio':             { c:  4.7, p:  3.3, f:  3.6 },
+  'Latte intero':                     { c:  4.9, p:  3.3, f:  3.6 }, // CREA 135010
+  'Latte parzialmente scremato':      { c:  5.0, p:  3.5, f:  1.5 }, // CREA 135020
+  'Latte scremato':                   { c:  5.3, p:  3.6, f:  0.2 }, // CREA 135030
+  'Latte senza lattosio':             { c:  4.9, p:  3.3, f:  3.6 }, // non in CREA — stessa composizione del latte intero
   'Farina di riso':                   { c: 80.1, p:  6.5, f:  0.8 },
   "Farina d'avena":                   { c: 65.9, p: 12.9, f:  7.0 },
   'Uova di gallina intere':           { c:  0.5, p: 12.4, f: 10.3 },
