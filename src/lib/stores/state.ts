@@ -136,7 +136,7 @@ export function calcMealTotals(
     const item  = group.items[mIdx];
     const qty   = qtys[group.id]?.[mIdx] ?? item.qty;
     const macro = MACRO_DB[item.name];
-    if (macro) {
+    if (macro && qty > 0) {
       c += (macro.c * qty) / 100;
       p += (macro.p * qty) / 100;
       f += (macro.f * qty) / 100;

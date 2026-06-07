@@ -27,15 +27,16 @@
   function handleBlur(e: FocusEvent) {
     const el  = e.currentTarget as HTMLInputElement;
     const val = Math.round(parseFloat(el.value));
-    if (!Number.isFinite(val) || val <= 0) {
+    if (!Number.isFinite(val) || val < 0) {
       el.value = String(qty);
       invalid = true;
       setTimeout(() => { invalid = false; }, 600);
       return;
     }
-    if (group.items.length <= 1) {
+    // val === 0: zero out only this item (no proportional scaling)
+    if (val === 0 || group.items.length <= 1) {
       quantities.update(q => {
-        const arr = [...(q[group.id] ?? [])];
+        const arr = [...(q[group.id] ?? group.items.map(i => i.qty))];
         arr[idx] = val;
         return { ...q, [group.id]: arr };
       });
@@ -63,7 +64,7 @@
   }
 </script>
 
-<div class="item-row" class:is-main={isMain} class:updated={flashing}>
+<div class="item-row" class:is-main={isMain} class:updated={flashing} class:zeroed={qty === 0}>
   <div class="item-main-line">
     <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
     <div
@@ -94,7 +95,7 @@
         bind:this={inputEl}
         type="number"
         inputmode="numeric"
-        min="1"
+        min="0"
         step="1"
         value={qty}
         class:invalid
@@ -127,9 +128,11 @@
     flex-direction: column;
     border-bottom: 1px solid var(--border);
     background: #fff;
+    transition: opacity .2s;
   }
   .item-row:last-child { border-bottom: none; }
   .item-row.is-main    { background: #f5f9ff; }
+  .item-row.zeroed     { opacity: .38; }
 
   .item-main-line {
     display: flex;

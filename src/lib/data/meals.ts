@@ -29,6 +29,16 @@ export const MEALS: Meal[] = [
           { name: 'Yogurt greco magro 0% bianco', qty: 250, main: true },
           { name: 'Skyr bianco',                  qty: 250 },
           { name: 'Fiocchi di Latte',              qty: 200 },
+          { name: 'Whey Protein – Concentrate',   qty:  30 },
+        ],
+      },
+      {
+        id: 'col_latte', label: 'Latte',
+        items: [
+          { name: 'Latte intero',                qty: 200, main: true },
+          { name: 'Latte parzialmente scremato', qty: 200 },
+          { name: 'Latte scremato',              qty: 200 },
+          { name: 'Latte senza lattosio',        qty: 200 },
         ],
       },
       {
