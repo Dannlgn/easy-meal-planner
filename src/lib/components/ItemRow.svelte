@@ -15,9 +15,10 @@
   $: expanded = $expandedMacros.has(key);
   $: flashing = $flashSet.has(key);
 
-  $: macroC = macro ? ((macro.c / 100) * qty).toFixed(1) : '—';
-  $: macroP = macro ? ((macro.p / 100) * qty).toFixed(1) : '—';
-  $: macroF = macro ? ((macro.f / 100) * qty).toFixed(1) : '—';
+  $: macroC    = macro ? ((macro.c / 100) * qty).toFixed(1) : '—';
+  $: macroP    = macro ? ((macro.p / 100) * qty).toFixed(1) : '—';
+  $: macroF    = macro ? ((macro.f / 100) * qty).toFixed(1) : '—';
+  $: macroKcal = macro ? Math.round((macro.c / 100) * qty * 4 + (macro.p / 100) * qty * 4 + (macro.f / 100) * qty * 9) : null;
 
   function handleBlur(e: FocusEvent) {
     const raw = (e.currentTarget as HTMLInputElement).value;
@@ -81,6 +82,7 @@
 
   {#if hasMacro && expanded}
     <div class="macro-row">
+      <span class="macro-pill kcal"><b>{macroKcal}</b> kcal</span>
       <span class="macro-pill mc">C <b>{macroC}</b>g</span>
       <span class="macro-pill mp">P <b>{macroP}</b>g</span>
       <span class="macro-pill mf">G <b>{macroF}</b>g</span>
@@ -192,6 +194,7 @@
     font-weight: 500;
   }
   .macro-pill b { font-weight: 700; }
+  .macro-pill.kcal { color: var(--text); font-weight: 600; }
   .macro-pill.mc { color: var(--mc); }
   .macro-pill.mp { color: var(--mp); }
   .macro-pill.mf { color: var(--mf); }

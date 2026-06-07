@@ -26,22 +26,7 @@
     <button class="btn-reset" on:click={() => resetGroup(group.id)}>↺ Reset</button>
   </div>
 
-  {#if group.dualMain}
-    <div class="dual-selector">
-      <button
-        class="pill-btn"
-        class:active={($activePills[group.id] ?? 0) === 0}
-        on:click={() => switchPill(0)}
-      >🍝 Pasta</button>
-      <button
-        class="pill-btn"
-        class:active={($activePills[group.id] ?? 0) === 1}
-        on:click={() => switchPill(1)}
-      >🍚 Riso</button>
-    </div>
-  {/if}
-
-  {#each group.items as item, idx}
+{#each group.items as item, idx}
     {#if showSep(idx)}
       <div class="item-sep"></div>
     {/if}
@@ -87,33 +72,7 @@
   }
   .btn-reset:active { background: rgba(255,255,255,.22); }
 
-  .dual-selector {
-    display: flex;
-    gap: 8px;
-    padding: 8px 14px;
-    background: #edf2f7;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .pill-btn {
-    flex: 1;
-    padding: 6px 0;
-    border-radius: 20px;
-    border: 1.5px solid var(--border);
-    background: #fff;
-    color: var(--muted);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all .15s;
-  }
-  .pill-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
-
-  .item-sep {
+.item-sep {
     height: 0;
     border-bottom: 1.5px dashed var(--border);
     margin: 0 14px;
