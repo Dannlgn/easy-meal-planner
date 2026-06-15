@@ -54,7 +54,7 @@ function loadSavedBase(): SavedPlan | null {
 // ── Stores ───────────────────────────────────────────────
 export const quantities     = writable<Record<string, number[]>>(loadQtys());
 export const mainItems      = writable<Record<string, number>>(loadMains());
-export const activePage     = writable(loadSavedBase() ? 5 : 0); // 0=Base, 1-4=meals, 5=Oggi
+export const activePage     = writable(loadSavedBase() ? 6 : 0); // 0=Base, 1-5=meals, 6=Oggi
 export const expandedMacros = writable(new Set<string>());
 export const flashSet       = writable(new Set<string>());
 export const savedBase      = writable<SavedPlan | null>(loadSavedBase());

@@ -6,16 +6,17 @@
   let howToOpen = false;
 
   const TABS = [
-    { label: 'Oggi',      page: 5 },
-    { label: 'Colazione', page: 1 },
-    { label: 'Spuntino',  page: 2 },
-    { label: 'Pranzo',    page: 3 },
-    { label: 'Cena',      page: 4 },
-    { label: 'Base',      page: 0 },
+    { label: 'Oggi',       page: 6 },
+    { label: 'Colazione',  page: 1 },
+    { label: 'Spuntino',   page: 2 },
+    { label: 'Spuntino 2', page: 3 },
+    { label: 'Pranzo',     page: 4 },
+    { label: 'Cena',       page: 5 },
+    { label: 'Base',       page: 0 },
   ];
 
-  $: isMealTab = $activePage >= 1 && $activePage <= 4;
-  $: mealIdx   = $activePage - 1; // 0-3 when on a meal tab
+  $: isMealTab = $activePage >= 1 && $activePage <= 5;
+  $: mealIdx   = $activePage - 1; // 0-4 when on a meal tab
 
   function isMealModified(mealIdx: number): boolean {
     const meal = MEALS[mealIdx];
@@ -55,13 +56,13 @@
       <button
         class="tab"
         class:active={$activePage === tab.page}
-        class:special={tab.page === 0 || tab.page === 5}
+        class:special={tab.page === 0 || tab.page === 6}
         role="tab"
         aria-selected={$activePage === tab.page}
         on:click={() => activePage.set(tab.page)}
       >
         {tab.label}
-        {#if tab.page >= 1 && tab.page <= 4 && isMealModified(tab.page - 1)}
+        {#if tab.page >= 1 && tab.page <= 5 && isMealModified(tab.page - 1)}
           <span class="mod-dot" aria-label="modificato"></span>
         {/if}
       </button>

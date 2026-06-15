@@ -14,9 +14,9 @@
 <main>
   {#if $activePage === 0}
     <BasePlan />
-  {:else if $activePage >= 1 && $activePage <= 4}
+  {:else if $activePage >= 1 && $activePage <= 5}
     <MealPanel meal={MEALS[$activePage - 1]} active />
-  {:else if $activePage === 5}
+  {:else if $activePage === 6}
     <TodayPlan />
   {/if}
 </main>

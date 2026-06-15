@@ -140,6 +140,65 @@ export const MEALS: Meal[] = [
   },
 
   {
+    id: 'spu2', label: 'Spuntino 2',
+    groups: [
+      {
+        id: 'spu2_carb', label: 'Carboidrati',
+        items: [
+          { name: 'Cereali da Colazione (media)',   qty: 30, main: true },
+          { name: 'Gallette di riso',               qty: 30 },
+          { name: 'Gallette di mais',               qty: 30 },
+          { name: 'Crackers (normali, riso, mais)', qty: 30 },
+          { name: 'Farina di riso',                 qty: 30 },
+          { name: "Farina d'avena",                 qty: 30 },
+          { name: 'Pane comune',                    qty: 40 },
+        ],
+      },
+      {
+        id: 'spu2_prot', label: 'Proteico',
+        items: [
+          { name: 'Yogurt greco magro 0% bianco', qty: 250, main: true },
+          { name: 'Skyr bianco',                  qty: 250 },
+          { name: 'Fiocchi di Latte',              qty: 200 },
+          { name: 'Whey Protein – Concentrate',   qty:  30 },
+          { name: 'Uova di gallina – albume',     qty: 250 },
+          { name: 'Affettato – Fesa di Tacchino', qty: 130 },
+        ],
+      },
+      {
+        id: 'spu2_aff', label: 'Affettati',
+        items: [
+          { name: 'Bresaola della Valtellina IGP',  qty: 80, main: true },
+          { name: 'Prosciutto crudo DOP di Parma',  qty: 60 },
+          { name: 'Prosciutto cotto alta qualità',  qty: 80 },
+          { name: "Speck dell'Alto Adige IGP",      qty: 60 },
+          { name: 'Mortadella Bologna IGP',         qty: 60 },
+          { name: 'Salame Milano',                  qty: 50 },
+          { name: 'Coppa',                          qty: 60 },
+        ],
+      },
+      {
+        id: 'spu2_fru', label: 'Frutta',
+        items: [
+          { name: 'Mela',      qty: 150, main: true },
+          { name: 'Banana',    qty: 100 },
+          { name: 'Pera',      qty: 150 },
+          { name: 'Arancia',   qty: 150 },
+          { name: 'Pesca',     qty: 150 },
+          { name: 'Fragola',   qty: 150 },
+          { name: 'Uva',       qty: 100 },
+          { name: 'Kiwi',      qty: 100 },
+          { name: 'Ananas',    qty: 150 },
+          { name: 'Mandarino', qty: 100 },
+          { name: 'Pura Frutta Frullata – Valfrutta', qty: 100 },
+          { name: 'Marmellata',                       qty:  30 },
+          { name: 'Miele',                            qty:  20 },
+        ],
+      },
+    ],
+  },
+
+  {
     id: 'pra', label: 'Pranzo',
     groups: [
       {
