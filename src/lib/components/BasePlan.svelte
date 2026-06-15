@@ -46,17 +46,17 @@
 
       {#each meal.groups as group}
         {@const info = mainItemInfo(meal, group.id)}
-        <div class="food-row" class:zero={info.qty === 0}>
-          <span class="food-name">{info.name}</span>
-          <span class="food-meta">
-            <span class="food-qty">{info.qty}g</span>
-            {#if info.kcal !== null}
-              <span class="food-kcal">{info.kcal} kcal</span>
-            {:else}
-              <span class="food-kcal zero-label">non mangiato</span>
-            {/if}
-          </span>
-        </div>
+        {#if info.qty > 0}
+          <div class="food-row">
+            <span class="food-name">{info.name}</span>
+            <span class="food-meta">
+              <span class="food-qty">{info.qty}g</span>
+              {#if info.kcal !== null}
+                <span class="food-kcal">{info.kcal} kcal</span>
+              {/if}
+            </span>
+          </div>
+        {/if}
       {/each}
 
       <div class="meal-macros">
@@ -151,7 +151,6 @@
     gap: 8px;
   }
   .food-row:last-of-type { border-bottom: none; }
-  .food-row.zero { opacity: .45; }
 
   .food-name {
     font-size: 13px;
@@ -180,11 +179,6 @@
     color: var(--muted);
     min-width: 50px;
     text-align: right;
-  }
-
-  .zero-label {
-    font-style: italic;
-    color: var(--muted);
   }
 
   .meal-macros {
