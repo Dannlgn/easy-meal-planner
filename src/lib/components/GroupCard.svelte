@@ -1,32 +1,61 @@
 <script lang="ts">
   import ItemRow from './ItemRow.svelte';
-  import { mainItems, resetGroup, getMainIdx } from '../stores/state';
+  import { mainItems, quantities, resetGroup, getMainIdx } from '../stores/state';
+  import { MACRO_DB } from '../data/macros';
   import type { FoodGroup } from '../types';
 
   export let group: FoodGroup;
 
-  $: mainIdx = getMainIdx(group, $mainItems);
+  let expanded = false;
+
+  $: mainIdx  = getMainIdx(group, $mainItems);
+  $: mainItem = group.items[mainIdx];
+  $: mainQty  = $quantities[group.id]?.[mainIdx] ?? mainItem.qty;
+  $: macro    = MACRO_DB[mainItem.name];
+  $: mainKcal = macro && mainQty > 0
+    ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * mainQty)
+    : null;
 
   function showSep(idx: number): boolean {
     if (group.items.length <= 1) return false;
     return idx === mainIdx + 1;
   }
+
+  function handleReset(e: MouseEvent) {
+    e.stopPropagation();
+    resetGroup(group.id);
+  }
 </script>
 
 <div class="group-card">
-  <div class="group-header">
+  <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+  <div class="group-header" on:click={() => expanded = !expanded}>
     <div class="header-left">
       <span class="group-title">{group.label}</span>
+      {#if !expanded}
+        <span class="main-preview">
+          {mainItem.name}
+          {#if mainQty > 0}<span class="preview-qty">{mainQty}g</span>{/if}
+          {#if mainKcal !== null}<span class="preview-kcal">{mainKcal} kcal</span>{/if}
+        </span>
+      {/if}
     </div>
-    <button class="btn-reset" on:click={() => resetGroup(group.id)}>↺ Reset</button>
+    <div class="header-right">
+      {#if expanded}
+        <button class="btn-reset" on:click={handleReset}>↺</button>
+      {/if}
+      <span class="chevron" class:open={expanded}>▾</span>
+    </div>
   </div>
 
-  {#each group.items as item, idx}
-    {#if showSep(idx)}
-      <div class="item-sep"></div>
-    {/if}
-    <ItemRow {group} {item} {idx} isMain={idx === mainIdx} />
-  {/each}
+  {#if expanded}
+    {#each group.items as item, idx}
+      {#if showSep(idx)}
+        <div class="item-sep"></div>
+      {/if}
+      <ItemRow {group} {item} {idx} isMain={idx === mainIdx} />
+    {/each}
+  {/if}
 </div>
 
 <style>
@@ -34,7 +63,7 @@
     background: var(--card);
     border-radius: var(--r);
     box-shadow: var(--sh);
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     overflow: hidden;
   }
 
@@ -46,6 +75,9 @@
     background: var(--hdr2);
     color: #fff;
     gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   .header-left {
@@ -53,6 +85,7 @@
     flex-direction: column;
     gap: 3px;
     min-width: 0;
+    flex: 1;
   }
 
   .group-title {
@@ -60,21 +93,60 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .7px;
-    opacity: .88;
+    opacity: .75;
+  }
+
+  .main-preview {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .preview-qty {
+    font-size: 12px;
+    font-weight: 700;
+    opacity: .9;
+  }
+
+  .preview-kcal {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: .6;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
   }
 
   .btn-reset {
     background: rgba(255,255,255,.12);
     border: 1px solid rgba(255,255,255,.22);
     color: rgba(255,255,255,.85);
-    padding: 3px 11px;
+    padding: 3px 9px;
     border-radius: 10px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     flex-shrink: 0;
   }
   .btn-reset:active { background: rgba(255,255,255,.22); }
+
+  .chevron {
+    font-size: 16px;
+    opacity: .7;
+    transition: transform .2s;
+    display: block;
+    line-height: 1;
+  }
+  .chevron.open { transform: rotate(180deg); }
 
   .item-sep {
     height: 0;

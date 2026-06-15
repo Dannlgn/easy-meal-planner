@@ -47,12 +47,7 @@
       <span class="app-title">Piano Alimentare</span>
       <button class="btn-howto" on:click={() => howToOpen = true}>Come funziona</button>
     </div>
-    <div class="header-actions">
-      {#if isMealTab}
-        <button class="btn-act" on:click={() => resetMeal(mealIdx)}>↺ Pasto</button>
-        <button class="btn-act" on:click={resetAll}>↺ Tutto</button>
-      {/if}
-    </div>
+    <div class="header-actions"></div>
   </div>
 
   <div class="tabs" role="tablist" aria-label="Navigazione">
@@ -127,20 +122,6 @@
     gap: 6px;
     flex-shrink: 0;
   }
-
-  .btn-act {
-    background: rgba(255,255,255,.12);
-    border: 1.5px solid rgba(255,255,255,.25);
-    color: rgba(255,255,255,.9);
-    padding: 5px 11px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background .15s;
-    white-space: nowrap;
-  }
-  .btn-act:active { background: rgba(255,255,255,.22); }
 
   .tabs {
     display: flex;
