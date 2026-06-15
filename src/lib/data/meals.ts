@@ -107,6 +107,18 @@ export const MEALS: Meal[] = [
         ],
       },
       {
+        id: 'spu_aff', label: 'Affettati',
+        items: [
+          { name: 'Bresaola della Valtellina IGP',  qty: 80, main: true },
+          { name: 'Prosciutto crudo DOP di Parma',  qty: 60 },
+          { name: 'Prosciutto cotto alta qualità',  qty: 80 },
+          { name: 'Speck dell\'Alto Adige IGP',     qty: 60 },
+          { name: 'Mortadella Bologna IGP',         qty: 60 },
+          { name: 'Salame Milano',                  qty: 50 },
+          { name: 'Coppa',                          qty: 60 },
+        ],
+      },
+      {
         id: 'spu_fru', label: 'Frutta',
         items: [
           { name: 'Mela',      qty: 150, main: true },

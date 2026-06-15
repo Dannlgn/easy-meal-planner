@@ -28,7 +28,15 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Gallette di mais':                 { c: 80.2, p:  7.2, f:  2.0 },
   'Crackers (normali, riso, mais)':   { c: 64.7, p:  9.1, f: 14.8 },
   'Whey Protein – Concentrate':       { c:  5.0, p: 80.0, f:  5.0 },
-  'Affettato – Fesa di Tacchino':     { c:  0.5, p: 21.7, f:  1.5 },
+  'Affettato – Fesa di Tacchino':         { c:  0.5, p: 21.7, f:  1.5 },
+  // Affettati — fonte CREA
+  'Bresaola della Valtellina IGP':        { c:  0.4, p: 33.1, f:  2.0 }, // CREA 110020
+  'Prosciutto crudo DOP di Parma':        { c:  0.3, p: 25.9, f: 18.3 }, // CREA 110510
+  'Prosciutto cotto alta qualità':        { c:  0.8, p: 18.0, f: 11.9 }, // CREA 110410
+  "Speck dell'Alto Adige IGP":            { c:  1.2, p: 30.7, f: 19.1 }, // CREA 110800
+  'Mortadella Bologna IGP':               { c:  0.0, p: 15.7, f: 25.0 }, // CREA 110200
+  'Salame Milano':                        { c:  1.1, p: 25.4, f: 31.0 }, // CREA 110640
+  'Coppa':                                { c:  0.0, p: 28.9, f: 31.6 }, // CREA 110150
   'Frutta fresca':                    { c:  9.9, p:  0.5, f:  0.2 },
   'Pura Frutta Frullata – Valfrutta': { c: 13.2, p:  0.4, f:  0.1 },
   'Marmellata':                       { c: 55.0, p:  0.5, f:  0.1 },
