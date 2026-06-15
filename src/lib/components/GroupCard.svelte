@@ -41,9 +41,6 @@
       {/if}
     </div>
     <div class="header-right">
-      {#if expanded}
-        <button class="btn-reset" on:click={handleReset}>↺</button>
-      {/if}
       <span class="chevron" class:open={expanded}>▾</span>
     </div>
   </div>
@@ -55,6 +52,9 @@
       {/if}
       <ItemRow {group} {item} {idx} isMain={idx === mainIdx} />
     {/each}
+    <div class="card-footer">
+      <button class="btn-reset" on:click={handleReset}>↺ Ripristina valori</button>
+    </div>
   {/if}
 </div>
 
@@ -126,18 +126,24 @@
     flex-shrink: 0;
   }
 
-  .btn-reset {
-    background: rgba(255,255,255,.12);
-    border: 1px solid rgba(255,255,255,.22);
-    color: rgba(255,255,255,.85);
-    padding: 3px 9px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    flex-shrink: 0;
+  .card-footer {
+    border-top: 1px solid var(--border);
+    padding: 8px 14px;
+    display: flex;
+    justify-content: flex-end;
   }
-  .btn-reset:active { background: rgba(255,255,255,.22); }
+
+  .btn-reset {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 0;
+    opacity: .7;
+  }
+  .btn-reset:active { opacity: 1; }
 
   .chevron {
     font-size: 16px;
