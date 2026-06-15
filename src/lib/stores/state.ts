@@ -38,12 +38,26 @@ function loadMains(): Record<string, number> {
   return initMains();
 }
 
+export type SavedPlan = {
+  quantities: Record<string, number[]>;
+  mains: Record<string, number>;
+};
+
+function loadSavedBase(): SavedPlan | null {
+  try {
+    const saved = localStorage.getItem('mp_base');
+    if (saved) return JSON.parse(saved);
+  } catch { /* ignore */ }
+  return null;
+}
+
 // ── Stores ───────────────────────────────────────────────
 export const quantities     = writable<Record<string, number[]>>(loadQtys());
 export const mainItems      = writable<Record<string, number>>(loadMains());
-export const activeMeal     = writable(0);
+export const activePage     = writable(1); // 0=Base, 1-4=meals, 5=Oggi
 export const expandedMacros = writable(new Set<string>());
 export const flashSet       = writable(new Set<string>());
+export const savedBase      = writable<SavedPlan | null>(loadSavedBase());
 
 quantities.subscribe(v => {
   try { localStorage.setItem('mp_quantities', JSON.stringify(v)); } catch { /* quota */ }
@@ -69,7 +83,6 @@ function triggerFlash(key: string) {
 
 type SmartTarget = { kcal: number; c: number; p: number; f: number };
 
-// Weights biased toward the dominant macro energy contribution
 function getWeights(target: SmartTarget) {
   const cKcal = target.c * 4, pKcal = target.p * 4, fKcal = target.f * 9;
   const total = cKcal + pKcal + fKcal;
@@ -84,16 +97,11 @@ function getWeights(target: SmartTarget) {
 function calcSmartQty(target: SmartTarget, substituteName: string): number {
   const sub = MACRO_DB[substituteName];
   if (!sub) return 50;
-
   const { wKcal, wC, wP, wF } = getWeights(target);
   const sK = (sub.c * 4 + sub.p * 4 + sub.f * 9) / 100;
-  const sC = sub.c / 100;
-  const sP = sub.p / 100;
-  const sF = sub.f / 100;
-
+  const sC = sub.c / 100, sP = sub.p / 100, sF = sub.f / 100;
   const den = wKcal * sK**2 + wC * sC**2 + wP * sP**2 + wF * sF**2;
   if (!den || !Number.isFinite(den)) return 50;
-
   const num = wKcal * sK * target.kcal + wC * sC * target.c + wP * sP * target.p + wF * sF * target.f;
   let x = num / den;
   if (!Number.isFinite(x) || x <= 0) return 5;
@@ -101,23 +109,18 @@ function calcSmartQty(target: SmartTarget, substituteName: string): number {
   return Math.max(5, Math.min(x, 500));
 }
 
-/** Recalculate every non-main item in a group to be nutritionally equivalent to the current main. */
 export function recalcGroupFromMain(groupId: string) {
   const group = findGroup(groupId);
   if (!group) return;
-
-  const mainIdx  = getMainIdx(group, get(mainItems));
-  const mainItem = group.items[mainIdx];
-  const mainQty  = get(quantities)[groupId]?.[mainIdx] ?? mainItem.qty;
+  const mainIdx   = getMainIdx(group, get(mainItems));
+  const mainItem  = group.items[mainIdx];
+  const mainQty   = get(quantities)[groupId]?.[mainIdx] ?? mainItem.qty;
   const mainMacro = MACRO_DB[mainItem.name];
-
   if (!mainMacro || mainQty <= 0) return;
-
   const tC = (mainMacro.c / 100) * mainQty;
   const tP = (mainMacro.p / 100) * mainQty;
   const tF = (mainMacro.f / 100) * mainQty;
   const target: SmartTarget = { c: tC, p: tP, f: tF, kcal: tC * 4 + tP * 4 + tF * 9 };
-
   quantities.update(q => {
     const arr = [...(q[groupId] ?? group.items.map(i => i.qty))];
     group.items.forEach((item, i) => {
@@ -132,12 +135,9 @@ export function recalcGroupFromMain(groupId: string) {
 export function resetGroup(groupId: string) {
   const group = findGroup(groupId);
   if (!group) return;
-
   const currentQtys = get(quantities)[groupId] ?? [];
   const origQtys = group.items.map(i => i.qty);
-
   quantities.update(q => ({ ...q, [groupId]: origQtys }));
-
   let anyChanged = false;
   origQtys.forEach((oq, i) => {
     if (oq !== currentQtys[i]) { triggerFlash(`${groupId}_${i}`); anyChanged = true; }
@@ -157,15 +157,22 @@ export function toggleMacro(key: string) {
   });
 }
 
-/** Switch the main item and recalculate all others to be nutritionally equivalent. */
 export function setMain(groupId: string, idx: number) {
   const group = findGroup(groupId);
   if (!group) return;
   if (getMainIdx(group, get(mainItems)) === idx) return;
-
   mainItems.update(m => ({ ...m, [groupId]: idx }));
   triggerFlash(`${groupId}_${idx}`);
   recalcGroupFromMain(groupId);
+}
+
+export function saveAsBase() {
+  const plan: SavedPlan = {
+    quantities: get(quantities),
+    mains: get(mainItems),
+  };
+  savedBase.set(plan);
+  try { localStorage.setItem('mp_base', JSON.stringify(plan)); } catch { /* quota */ }
 }
 
 export function getMainIdx(group: FoodGroup, mains: Record<string, number>): number {

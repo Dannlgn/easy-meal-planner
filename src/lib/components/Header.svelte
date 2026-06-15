@@ -1,51 +1,66 @@
 <script lang="ts">
-  import { activeMeal, resetMeal, quantities, mainItems } from '../stores/state';
+  import { activePage, resetMeal, quantities, mainItems, savedBase, calcMealTotals } from '../stores/state';
   import { MEALS } from '../data/meals';
 
-  function isMealModified(mealIdx: number, qtys: Record<string, number[]>, mains: Record<string, number>): boolean {
+  const TABS = [
+    { label: 'Base',      page: 0 },
+    { label: 'Colazione', page: 1 },
+    { label: 'Spuntino',  page: 2 },
+    { label: 'Pranzo',    page: 3 },
+    { label: 'Cena',      page: 4 },
+    { label: 'Oggi',      page: 5 },
+  ];
+
+  $: isMealTab = $activePage >= 1 && $activePage <= 4;
+  $: mealIdx   = $activePage - 1; // 0-3 when on a meal tab
+
+  function isMealModified(mealIdx: number): boolean {
     const meal = MEALS[mealIdx];
-    for (const g of meal.groups) {
-      const origMain = g.items.findIndex(it => it.main);
-      const defaultMain = origMain >= 0 ? origMain : 0;
-      if ((mains[g.id] ?? defaultMain) !== defaultMain) return true;
-      const current = qtys[g.id];
-      if (!current) continue;
-      for (let i = 0; i < g.items.length; i++) {
-        if (current[i] !== undefined && current[i] !== g.items[i].qty) return true;
+    const base = $savedBase;
+    const qtys  = $quantities;
+    const mains = $mainItems;
+    if (!base) {
+      // compare vs data defaults
+      for (const g of meal.groups) {
+        const dm = Math.max(0, g.items.findIndex(it => it.main));
+        if ((mains[g.id] ?? dm) !== dm) return true;
+        const cur = qtys[g.id];
+        if (cur && cur.some((v, i) => v !== g.items[i].qty)) return true;
       }
+      return false;
     }
-    return false;
+    // compare vs saved base via kcal delta
+    const todayTot = calcMealTotals(meal, qtys, mains);
+    const baseTot  = calcMealTotals(meal, base.quantities, base.mains);
+    return Math.abs(todayTot.kcal - baseTot.kcal) > 1;
   }
 
-  function resetAll() {
-    MEALS.forEach((_, i) => resetMeal(i));
-  }
+  function resetAll() { MEALS.forEach((_, i) => resetMeal(i)); }
 </script>
 
 <header>
   <div class="header-top">
-    <span class="app-title">
-      Piano Alimentare
-      <span>scaling proporzionale</span>
-    </span>
+    <span class="app-title">Piano Alimentare</span>
     <div class="header-actions">
-      <button class="btn-reset-meal" on:click={() => resetMeal($activeMeal)}>↺ Pasto</button>
-      <button class="btn-reset-all" on:click={resetAll}>↺ Tutto</button>
+      {#if isMealTab}
+        <button class="btn-act" on:click={() => resetMeal(mealIdx)}>↺ Pasto</button>
+        <button class="btn-act" on:click={resetAll}>↺ Tutto</button>
+      {/if}
     </div>
   </div>
 
-  <div class="tabs" role="tablist" aria-label="Pasti">
-    {#each MEALS as meal, i}
+  <div class="tabs" role="tablist" aria-label="Navigazione">
+    {#each TABS as tab}
       <button
         class="tab"
-        class:active={$activeMeal === i}
+        class:active={$activePage === tab.page}
+        class:special={tab.page === 0 || tab.page === 5}
         role="tab"
-        aria-selected={$activeMeal === i}
-        aria-controls="meal-panel-{i}"
-        on:click={() => activeMeal.set(i)}
+        aria-selected={$activePage === tab.page}
+        on:click={() => activePage.set(tab.page)}
       >
-        {meal.label}
-        {#if isMealModified(i, $quantities, $mainItems)}
+        {tab.label}
+        {#if tab.page >= 1 && tab.page <= 4 && isMealModified(tab.page - 1)}
           <span class="mod-dot" aria-label="modificato"></span>
         {/if}
       </button>
@@ -70,20 +85,13 @@
     justify-content: space-between;
     padding-bottom: 12px;
     gap: 8px;
+    min-height: 32px;
   }
 
   .app-title {
     font-size: 17px;
     font-weight: 700;
     letter-spacing: -.2px;
-    flex: 1;
-    min-width: 0;
-  }
-  .app-title span {
-    opacity: .7;
-    font-weight: 400;
-    font-size: 13px;
-    margin-left: 4px;
   }
 
   .header-actions {
@@ -92,8 +100,7 @@
     flex-shrink: 0;
   }
 
-  .btn-reset-meal,
-  .btn-reset-all {
+  .btn-act {
     background: rgba(255,255,255,.12);
     border: 1.5px solid rgba(255,255,255,.25);
     color: rgba(255,255,255,.9);
@@ -105,8 +112,7 @@
     transition: background .15s;
     white-space: nowrap;
   }
-  .btn-reset-meal:active,
-  .btn-reset-all:active { background: rgba(255,255,255,.22); }
+  .btn-act:active { background: rgba(255,255,255,.22); }
 
   .tabs {
     display: flex;
@@ -117,11 +123,10 @@
   .tabs::-webkit-scrollbar { display: none; }
 
   .tab {
-    flex: 1;
-    min-width: 72px;
-    padding: 10px 6px 12px;
+    flex-shrink: 0;
+    padding: 10px 12px 12px;
     text-align: center;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     color: rgba(255,255,255,.5);
     cursor: pointer;
@@ -137,11 +142,19 @@
     border-bottom-color: #64B5F6;
     font-weight: 700;
   }
+  .tab.special {
+    color: rgba(255,255,255,.65);
+    font-style: italic;
+  }
+  .tab.special.active {
+    color: #fff;
+    font-style: normal;
+  }
 
   .mod-dot {
     position: absolute;
     top: 6px;
-    right: 6px;
+    right: 4px;
     width: 6px;
     height: 6px;
     border-radius: 50%;

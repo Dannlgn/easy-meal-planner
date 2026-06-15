@@ -1,20 +1,24 @@
 <script lang="ts">
   import Header from './lib/components/Header.svelte';
   import MealPanel from './lib/components/MealPanel.svelte';
-  import DailyTotals from './lib/components/DailyTotals.svelte';
+  import BasePlan from './lib/components/BasePlan.svelte';
+  import TodayPlan from './lib/components/TodayPlan.svelte';
   import StickyTotals from './lib/components/StickyTotals.svelte';
   import Onboarding from './lib/components/Onboarding.svelte';
-  import { activeMeal } from './lib/stores/state';
+  import { activePage } from './lib/stores/state';
   import { MEALS } from './lib/data/meals';
 </script>
 
 <Header />
 
 <main>
-  {#each MEALS as meal, i}
-    <MealPanel {meal} active={$activeMeal === i} />
-  {/each}
-  <DailyTotals />
+  {#if $activePage === 0}
+    <BasePlan />
+  {:else if $activePage >= 1 && $activePage <= 4}
+    <MealPanel meal={MEALS[$activePage - 1]} active />
+  {:else if $activePage === 5}
+    <TodayPlan />
+  {/if}
 </main>
 
 <StickyTotals />
