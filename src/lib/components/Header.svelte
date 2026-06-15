@@ -1,6 +1,9 @@
 <script lang="ts">
   import { activePage, resetMeal, quantities, mainItems, savedBase, calcMealTotals } from '../stores/state';
   import { MEALS } from '../data/meals';
+  import HowTo from './HowTo.svelte';
+
+  let howToOpen = false;
 
   const TABS = [
     { label: 'Base',      page: 0 },
@@ -40,7 +43,10 @@
 
 <header>
   <div class="header-top">
-    <span class="app-title">Piano Alimentare</span>
+    <div class="title-row">
+      <span class="app-title">Piano Alimentare</span>
+      <button class="btn-howto" on:click={() => howToOpen = true}>Come funziona</button>
+    </div>
     <div class="header-actions">
       {#if isMealTab}
         <button class="btn-act" on:click={() => resetMeal(mealIdx)}>↺ Pasto</button>
@@ -68,6 +74,8 @@
   </div>
 </header>
 
+<HowTo bind:open={howToOpen} />
+
 <style>
   header {
     background: var(--hdr);
@@ -88,11 +96,31 @@
     min-height: 32px;
   }
 
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
   .app-title {
     font-size: 17px;
     font-weight: 700;
     letter-spacing: -.2px;
   }
+
+  .btn-howto {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    color: rgba(255,255,255,.85);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s;
+  }
+  .btn-howto:active { background: rgba(255,255,255,.25); }
 
   .header-actions {
     display: flex;
