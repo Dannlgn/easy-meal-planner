@@ -1,9 +1,40 @@
 <script lang="ts">
-  import { savedBase, quantities, mainItems, saveAsBase, calcMealTotals, getMainIdx, activePage } from '../stores/state';
+  import { savedBase, saveAsBase, calcMealTotals, getMainIdx, activePage } from '../stores/state';
   import { MEALS } from '../data/meals';
   import { MACRO_DB } from '../data/macros';
 
   $: base = $savedBase;
+
+  // Precomputed reactively so Svelte tracks `base` as a dependency
+  $: mealRows = base ? MEALS.map(meal => {
+    const mt = calcMealTotals(meal, base.quantities, base.mains);
+    const foods = meal.groups
+      .map(group => {
+        const idx  = base.mains[group.id] ?? Math.max(0, group.items.findIndex(it => it.main));
+        const item = group.items[idx];
+        const qty  = base.quantities[group.id]?.[idx] ?? item.qty;
+        if (qty <= 0) return null;
+        const macro = MACRO_DB[item.name];
+        const kcal  = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
+        return { name: item.name, qty, kcal };
+      })
+      .filter((x): x is { name: string; qty: number; kcal: number | null } => x !== null);
+    return { label: meal.label, mt };
+  }) : null;
+
+  $: mealFoods = base ? MEALS.map(meal =>
+    meal.groups
+      .map(group => {
+        const idx  = base.mains[group.id] ?? Math.max(0, group.items.findIndex(it => it.main));
+        const item = group.items[idx];
+        const qty  = base.quantities[group.id]?.[idx] ?? item.qty;
+        if (qty <= 0) return null;
+        const macro = MACRO_DB[item.name];
+        const kcal  = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
+        return { name: item.name, qty, kcal };
+      })
+      .filter((x): x is { name: string; qty: number; kcal: number | null } => x !== null)
+  ) : null;
 
   $: dailyBase = base ? (() => {
     let c = 0, p = 0, f = 0, kcal = 0;
@@ -13,22 +44,6 @@
     }
     return { c, p, f, kcal };
   })() : null;
-
-  function mealTotals(meal: typeof MEALS[0]) {
-    return base ? calcMealTotals(meal, base.quantities, base.mains) : null;
-  }
-
-  function mainItemInfo(meal: typeof MEALS[0], groupId: string) {
-    if (!base) return null;
-    const group = meal.groups.find(g => g.id === groupId)!;
-    const idx   = base.mains[groupId] ?? Math.max(0, group.items.findIndex(it => it.main));
-    const item  = group.items[idx];
-    const qty   = base.quantities[groupId]?.[idx] ?? item.qty;
-    if (qty <= 0) return null;
-    const macro = MACRO_DB[item.name];
-    const kcal  = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
-    return { name: item.name, qty, kcal };
-  }
 
   let confirmUpdate = false;
 
@@ -59,8 +74,9 @@
       <span class="base-hint">fisso — non cambia con le sostituzioni</span>
     </div>
 
-    {#each MEALS as meal}
-      {@const mt = mealTotals(meal)}
+    {#each MEALS as meal, mi}
+      {@const mt = mealRows?.[mi]?.mt}
+      {@const foods = mealFoods?.[mi] ?? []}
       <section class="meal-section">
         <div class="meal-header">
           <span class="meal-label">{meal.label}</span>
@@ -69,19 +85,16 @@
           {/if}
         </div>
 
-        {#each meal.groups as group}
-          {@const info = mainItemInfo(meal, group.id)}
-          {#if info}
-            <div class="food-row">
-              <span class="food-name">{info.name}</span>
-              <span class="food-meta">
-                <span class="food-qty">{info.qty}g</span>
-                {#if info.kcal !== null}
-                  <span class="food-kcal">{info.kcal} kcal</span>
-                {/if}
-              </span>
-            </div>
-          {/if}
+        {#each foods as food}
+          <div class="food-row">
+            <span class="food-name">{food.name}</span>
+            <span class="food-meta">
+              <span class="food-qty">{food.qty}g</span>
+              {#if food.kcal !== null}
+                <span class="food-kcal">{food.kcal} kcal</span>
+              {/if}
+            </span>
+          </div>
         {/each}
 
         {#if mt}
@@ -140,16 +153,9 @@
     text-transform: uppercase;
     letter-spacing: .5px;
   }
-  .base-hint {
-    font-size: 11px;
-    color: var(--muted);
-  }
+  .base-hint { font-size: 11px; color: var(--muted); }
 
-  /* ── Empty state ── */
-  .empty-state {
-    text-align: center;
-    padding: 32px 16px;
-  }
+  .empty-state { text-align: center; padding: 32px 16px; }
   .empty-icon { font-size: 44px; margin-bottom: 14px; }
   .empty-state h2 { font-size: 17px; font-weight: 700; color: var(--text); margin: 0 0 10px; }
   .empty-state p { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0 0 8px; }
@@ -166,7 +172,6 @@
     cursor: pointer;
   }
 
-  /* ── Meal sections ── */
   .meal-section {
     background: var(--card);
     border-radius: var(--r);
@@ -182,13 +187,7 @@
     background: var(--hdr2);
     color: #fff;
   }
-  .meal-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .7px;
-    opacity: .88;
-  }
+  .meal-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; opacity: .88; }
   .meal-kcal { font-size: 12px; font-weight: 600; opacity: .85; }
 
   .food-row {
@@ -218,7 +217,6 @@
   .mp { color: var(--mp); }
   .mf { color: var(--mf); }
 
-  /* ── Daily card ── */
   .daily-card {
     background: var(--card);
     border-radius: var(--r);
@@ -227,14 +225,7 @@
     margin-bottom: 16px;
     border-top: 3px solid var(--accent);
   }
-  .daily-label {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .7px;
-    color: var(--accent);
-    margin-bottom: 12px;
-  }
+  .daily-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--accent); margin-bottom: 12px; }
   .daily-grid { display: flex; justify-content: space-around; }
   .d-item { text-align: center; }
   .d-val { font-size: 22px; font-weight: 800; color: var(--text); }
@@ -243,7 +234,6 @@
   .d-val.mf { color: var(--mf); }
   .d-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
 
-  /* ── Buttons ── */
   .btn-save {
     width: 100%;
     padding: 13px;
@@ -257,13 +247,8 @@
     margin-bottom: 8px;
   }
   .btn-save:active { opacity: .7; }
-  .btn-save.primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
+  .btn-save.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-  /* ── Confirm box ── */
   .confirm-box {
     background: #fff8e1;
     border: 1.5px solid #ffc107;
@@ -274,25 +259,13 @@
   .confirm-box p { font-size: 13px; color: #5d4037; margin-bottom: 12px; line-height: 1.5; }
   .confirm-actions { display: flex; gap: 10px; }
   .btn-cancel {
-    flex: 1;
-    padding: 10px;
-    border-radius: var(--r);
-    border: 1.5px solid var(--border);
-    background: #fff;
-    color: var(--muted);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
+    flex: 1; padding: 10px; border-radius: var(--r);
+    border: 1.5px solid var(--border); background: #fff; color: var(--muted);
+    font-size: 13px; font-weight: 600; cursor: pointer;
   }
   .btn-confirm-ok {
-    flex: 1;
-    padding: 10px;
-    border-radius: var(--r);
-    border: none;
-    background: #f44336;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
+    flex: 1; padding: 10px; border-radius: var(--r);
+    border: none; background: #f44336; color: #fff;
+    font-size: 13px; font-weight: 700; cursor: pointer;
   }
 </style>
