@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { quantities, mainItems, savedBase, calcMealTotals, getMainIdx } from '../stores/state';
+  import { quantities, mainItems, savedBase, calcMealTotals, getMainIdx, resetTodayToBase } from '../stores/state';
   import { MEALS } from '../data/meals';
   import { MACRO_DB } from '../data/macros';
 
@@ -63,8 +63,12 @@
 <div class="today-wrap">
   {#if !base}
     <div class="no-base-banner">
-      <span>Nessun piano base salvato — vai alla tab <strong>Base</strong> per salvarlo e vedere i delta.</span>
+      <span>Nessun piano base salvato — vai alla tab <strong>Base</strong> per configurarlo e salvarlo. Poi usa questa tab ogni giorno.</span>
     </div>
+  {:else}
+    <button class="btn-reset-today" on:click={resetTodayToBase}>
+      ↺ Ripristina piano base
+    </button>
   {/if}
 
   {#each mealRows as row}
@@ -152,6 +156,21 @@
     max-width: 540px;
     margin: 0 auto;
   }
+
+  .btn-reset-today {
+    width: 100%;
+    padding: 11px;
+    border-radius: var(--r);
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 14px;
+    transition: background .15s;
+  }
+  .btn-reset-today:active { background: #f5f5f5; }
 
   .no-base-banner {
     background: #fff8e1;

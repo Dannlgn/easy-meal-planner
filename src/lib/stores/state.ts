@@ -54,7 +54,7 @@ function loadSavedBase(): SavedPlan | null {
 // ── Stores ───────────────────────────────────────────────
 export const quantities     = writable<Record<string, number[]>>(loadQtys());
 export const mainItems      = writable<Record<string, number>>(loadMains());
-export const activePage     = writable(1); // 0=Base, 1-4=meals, 5=Oggi
+export const activePage     = writable(loadSavedBase() ? 5 : 0); // 0=Base, 1-4=meals, 5=Oggi
 export const expandedMacros = writable(new Set<string>());
 export const flashSet       = writable(new Set<string>());
 export const savedBase      = writable<SavedPlan | null>(loadSavedBase());
@@ -145,8 +145,38 @@ export function resetGroup(groupId: string) {
   if (!anyChanged) origQtys.forEach((_, i) => triggerFlash(`${groupId}_${i}`));
 }
 
+export function resetTodayToBase() {
+  const base = get(savedBase);
+  if (!base) return;
+  quantities.set({ ...base.quantities });
+  mainItems.set({ ...base.mains });
+}
+
 export function resetMeal(mealIdx: number) {
-  MEALS[mealIdx]?.groups.forEach(g => resetGroup(g.id));
+  const meal = MEALS[mealIdx];
+  if (!meal) return;
+  const base = get(savedBase);
+  if (base) {
+    quantities.update(q => {
+      const next = { ...q };
+      for (const g of meal.groups) {
+        next[g.id] = base.quantities[g.id]
+          ? [...base.quantities[g.id]]
+          : g.items.map(i => i.qty);
+      }
+      return next;
+    });
+    mainItems.update(m => {
+      const next = { ...m };
+      for (const g of meal.groups) {
+        next[g.id] = base.mains[g.id] ?? Math.max(0, g.items.findIndex(it => it.main));
+      }
+      return next;
+    });
+    meal.groups.forEach(g => g.items.forEach((_, i) => triggerFlash(`${g.id}_${i}`)));
+  } else {
+    meal.groups.forEach(g => resetGroup(g.id));
+  }
 }
 
 export function toggleMacro(key: string) {

@@ -6,12 +6,12 @@
   let howToOpen = false;
 
   const TABS = [
-    { label: 'Base',      page: 0 },
+    { label: 'Oggi',      page: 5 },
     { label: 'Colazione', page: 1 },
     { label: 'Spuntino',  page: 2 },
     { label: 'Pranzo',    page: 3 },
     { label: 'Cena',      page: 4 },
-    { label: 'Oggi',      page: 5 },
+    { label: 'Base',      page: 0 },
   ];
 
   $: isMealTab = $activePage >= 1 && $activePage <= 4;
