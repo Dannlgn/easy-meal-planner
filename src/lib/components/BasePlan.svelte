@@ -5,36 +5,25 @@
 
   $: base = $savedBase;
 
-  // Precomputed reactively so Svelte tracks `base` as a dependency
-  $: mealRows = base ? MEALS.map(meal => {
-    const mt = calcMealTotals(meal, base.quantities, base.mains);
-    const foods = meal.groups
-      .map(group => {
-        const idx  = base.mains[group.id] ?? Math.max(0, group.items.findIndex(it => it.main));
-        const item = group.items[idx];
-        const qty  = base.quantities[group.id]?.[idx] ?? item.qty;
-        if (qty <= 0) return null;
-        const macro = MACRO_DB[item.name];
-        const kcal  = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
-        return { name: item.name, qty, kcal };
-      })
-      .filter((x): x is { name: string; qty: number; kcal: number | null } => x !== null);
-    return { label: meal.label, mt };
-  }) : null;
+  type FoodInfo = { name: string; qty: number; kcal: number | null };
 
-  $: mealFoods = base ? MEALS.map(meal =>
-    meal.groups
-      .map(group => {
-        const idx  = base.mains[group.id] ?? Math.max(0, group.items.findIndex(it => it.main));
-        const item = group.items[idx];
-        const qty  = base.quantities[group.id]?.[idx] ?? item.qty;
-        if (qty <= 0) return null;
-        const macro = MACRO_DB[item.name];
-        const kcal  = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
-        return { name: item.name, qty, kcal };
-      })
-      .filter((x): x is { name: string; qty: number; kcal: number | null } => x !== null)
-  ) : null;
+  function groupFood(groupId: string, items: typeof MEALS[0]['groups'][0]['items']): FoodInfo | null {
+    if (!base) return null;
+    const idx  = base.mains[groupId] ?? Math.max(0, items.findIndex(it => it.main));
+    const item = items[idx];
+    const qty  = base.quantities[groupId]?.[idx] ?? item.qty;
+    if (qty <= 0) return null;
+    const macro = MACRO_DB[item.name];
+    const kcal  = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
+    return { name: item.name, qty, kcal };
+  }
+
+  // Single reactive computation — Svelte tracks `base` correctly
+  $: mealRows = base ? MEALS.map(meal => ({
+    label: meal.label,
+    mt:    calcMealTotals(meal, base.quantities, base.mains),
+    foods: meal.groups.map(g => groupFood(g.id, g.items)).filter((x): x is FoodInfo => x !== null),
+  })) : null;
 
   $: dailyBase = base ? (() => {
     let c = 0, p = 0, f = 0, kcal = 0;
@@ -74,18 +63,14 @@
       <span class="base-hint">fisso — non cambia con le sostituzioni</span>
     </div>
 
-    {#each MEALS as meal, mi}
-      {@const mt = mealRows?.[mi]?.mt}
-      {@const foods = mealFoods?.[mi] ?? []}
+    {#each mealRows ?? [] as row}
       <section class="meal-section">
         <div class="meal-header">
-          <span class="meal-label">{meal.label}</span>
-          {#if mt}
-            <span class="meal-kcal">{Math.round(mt.kcal)} kcal</span>
-          {/if}
+          <span class="meal-label">{row.label}</span>
+          <span class="meal-kcal">{Math.round(row.mt.kcal)} kcal</span>
         </div>
 
-        {#each foods as food}
+        {#each row.foods as food}
           <div class="food-row">
             <span class="food-name">{food.name}</span>
             <span class="food-meta">
@@ -97,13 +82,11 @@
           </div>
         {/each}
 
-        {#if mt}
-          <div class="meal-macros">
-            <span class="mc">C <b>{mt.c.toFixed(1)}g</b></span>
-            <span class="mp">P <b>{mt.p.toFixed(1)}g</b></span>
-            <span class="mf">G <b>{mt.f.toFixed(1)}g</b></span>
-          </div>
-        {/if}
+        <div class="meal-macros">
+          <span class="mc">C <b>{row.mt.c.toFixed(1)}g</b></span>
+          <span class="mp">P <b>{row.mt.p.toFixed(1)}g</b></span>
+          <span class="mf">G <b>{row.mt.f.toFixed(1)}g</b></span>
+        </div>
       </section>
     {/each}
 
