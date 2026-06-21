@@ -24,7 +24,7 @@
         <li><span class="icon">◉</span> Tocca il <b>cerchio</b> di un alimento per impostarlo come principale — i totali si aggiornano</li>
         <li><span class="icon" style="text-decoration:underline;color:var(--accent)">Nome ▶</span> Tocca il <b>nome</b> per vedere kcal e macronutrienti</li>
         <li><span class="icon">✏</span> Modifica una <b>quantità</b> per scalare proporzionalmente tutto il gruppo</li>
-        <li><span class="icon">📊</span> La barra in basso mostra i <b>totali giornalieri</b> in tempo reale</li>
+        <li><span class="icon">👆</span> <b>Scorri</b> orizzontalmente tra i pasti — o usa le tab in alto</li>
       </ul>
       <button class="btn-ok" on:click={dismiss}>Capito!</button>
     </div>
@@ -35,7 +35,7 @@
   .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.55);
+    background: rgba(15,41,66,.55);
     z-index: 500;
     display: flex;
     align-items: center;
@@ -50,18 +50,18 @@
   }
 
   .card {
-    background: #fff;
-    border-radius: 16px;
+    background: var(--card);
+    border-radius: var(--r-lg);
     padding: 24px 20px 20px;
     max-width: 340px;
     width: 100%;
-    box-shadow: 0 8px 40px rgba(0,0,0,.25);
+    box-shadow: var(--sh-lg);
   }
 
   h3 {
     font-size: 17px;
     font-weight: 800;
-    color: var(--hdr);
+    color: var(--hdr2);
     margin-bottom: 16px;
     text-align: center;
   }
@@ -93,14 +93,16 @@
 
   .btn-ok {
     width: 100%;
-    padding: 12px;
+    padding: 13px;
     background: var(--accent);
     color: #fff;
     border: none;
-    border-radius: 12px;
+    border-radius: var(--r);
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
+    min-height: 48px;
+    transition: background .15s;
   }
-  .btn-ok:active { opacity: .85; }
+  .btn-ok:active { background: var(--accent-dk); }
 </style>

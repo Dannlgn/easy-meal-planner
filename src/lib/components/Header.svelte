@@ -17,7 +17,6 @@
   ];
 
   $: isMealTab = $activePage >= 1 && $activePage <= 5;
-  $: mealIdx   = $activePage - 1;
 
   function isMealModified(mealIdx: number): boolean {
     const meal = MEALS[mealIdx];
@@ -38,7 +37,6 @@
     return Math.abs(todayTot.kcal - baseTot.kcal) > 1;
   }
 
-  // ── Tab scroll hints ──────────────────────────────────────
   let tabsEl: HTMLElement;
   let showLeftFade  = false;
   let showRightFade = true;
@@ -55,11 +53,7 @@
   }
 
   onMount(() => { updateFades(); });
-
-  afterUpdate(() => {
-    scrollActiveIntoView();
-    updateFades();
-  });
+  afterUpdate(() => { scrollActiveIntoView(); updateFades(); });
 </script>
 
 <header>
@@ -68,7 +62,6 @@
       <span class="app-title">Piano Alimentare</span>
       <button class="btn-howto" on:click={() => howToOpen = true}>Come funziona</button>
     </div>
-    <div class="header-actions"></div>
   </div>
 
   <div class="tabs-wrap">
@@ -111,19 +104,18 @@
   header {
     background: var(--hdr);
     color: #fff;
-    padding: 14px 16px 0;
+    padding: 12px 16px 0;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 2px 16px rgba(0,0,0,.20);
+    box-shadow: 0 2px 20px rgba(0,0,0,.28);
   }
 
   .header-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 12px;
-    gap: 8px;
+    padding-bottom: 10px;
     min-height: 32px;
   }
 
@@ -134,32 +126,27 @@
   }
 
   .app-title {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
-    letter-spacing: -.2px;
+    letter-spacing: -.3px;
   }
 
   .btn-howto {
-    background: rgba(255,255,255,.15);
-    border: 1px solid rgba(255,255,255,.3);
-    color: rgba(255,255,255,.85);
-    padding: 3px 10px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.22);
+    color: rgba(255,255,255,.80);
+    padding: 4px 11px;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
     transition: background .15s;
+    min-height: 28px;
   }
-  .btn-howto:active { background: rgba(255,255,255,.25); }
+  .btn-howto:active { background: rgba(255,255,255,.22); }
 
-  .header-actions {
-    display: flex;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-
-  /* ── Tab container con fade ── */
+  /* ── Tab container ── */
   .tabs-wrap {
     position: relative;
   }
@@ -168,62 +155,63 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 36px;
+    width: 40px;
     pointer-events: none;
     z-index: 1;
   }
-  .fade-left {
-    left: 0;
-    background: linear-gradient(to right, var(--hdr), transparent);
-  }
-  .fade-right {
-    right: 0;
-    background: linear-gradient(to left, var(--hdr), transparent);
-  }
+  .fade-left  { left:  0; background: linear-gradient(to right, var(--hdr), transparent); }
+  .fade-right { right: 0; background: linear-gradient(to left,  var(--hdr), transparent); }
 
   .tabs {
     display: flex;
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    gap: 2px;
   }
   .tabs::-webkit-scrollbar { display: none; }
 
   .tab {
     flex-shrink: 0;
-    padding: 10px 12px 12px;
-    text-align: center;
-    font-size: 12px;
+    padding: 10px 14px 12px;
+    font-size: 13px;
     font-weight: 500;
-    color: rgba(255,255,255,.5);
+    color: rgba(255,255,255,.48);
     cursor: pointer;
     border: none;
     background: none;
-    border-bottom: 3px solid transparent;
+    border-bottom: 2px solid transparent;
     white-space: nowrap;
     transition: color .15s, border-color .15s;
     position: relative;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
   }
   .tab.active {
     color: #fff;
-    border-bottom-color: #64B5F6;
     font-weight: 700;
+    border-bottom-color: var(--accent);
   }
   .tab.special {
-    color: rgba(255,255,255,.65);
+    color: rgba(255,255,255,.58);
     font-style: italic;
   }
   .tab.special.active {
     color: #fff;
     font-style: normal;
+    border-bottom-color: rgba(255,255,255,.5);
   }
+  .tab:active { color: rgba(255,255,255,.85); }
 
   .mod-dot {
     position: absolute;
-    top: 6px;
-    right: 4px;
-    width: 6px;
-    height: 6px;
+    top: 8px;
+    right: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background: var(--mc);
     display: block;

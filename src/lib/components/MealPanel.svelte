@@ -5,7 +5,6 @@
   import type { Meal, FoodGroup } from '../types';
 
   export let meal: Meal;
-  export let active: boolean;
 
   function groupsForSection(groupIds: string[]): FoodGroup[] {
     return groupIds
@@ -14,11 +13,10 @@
   }
 </script>
 
-<div class="meal-panel" class:active>
+<div class="meal-panel">
   {#if meal.sections}
     {#each meal.sections as section}
       {#if section.groupIds.length === 1}
-        <!-- sezione con un solo gruppo: GroupCard diretta, senza wrapper -->
         {#each groupsForSection(section.groupIds) as group}
           <GroupCard {group} />
         {/each}
@@ -33,8 +31,3 @@
   {/if}
   <MealTotals {meal} />
 </div>
-
-<style>
-  .meal-panel { display: none; }
-  .meal-panel.active { display: block; }
-</style>

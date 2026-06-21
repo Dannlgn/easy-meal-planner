@@ -48,7 +48,10 @@
     user-select: none;
     -webkit-user-select: none;
     gap: 8px;
+    min-height: 52px;
+    transition: background .15s;
   }
+  .section-header:active { background: var(--accent-dk); }
 
   .header-left {
     display: flex;
@@ -58,36 +61,35 @@
   }
 
   .section-title {
-    font-size: 12px;
-    font-weight: 800;
+    font-size: 13px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
+    letter-spacing: .8px;
     color: #fff;
     white-space: nowrap;
   }
 
   .section-count {
     font-size: 11px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, .6);
+    font-weight: 400;
+    color: rgba(255,255,255,.58);
     white-space: nowrap;
   }
 
   .chevron {
-    font-size: 16px;
-    color: rgba(255, 255, 255, .85);
-    transition: transform .2s;
+    font-size: 18px;
+    color: rgba(255,255,255,.80);
+    transition: transform .2s ease-out;
     line-height: 1;
     flex-shrink: 0;
   }
-  .chevron.open { transform: rotate(180deg); }
+  .chevron.open { transform: rotate(180deg); color: #fff; }
 
   .section-body {
     background: var(--bg);
     padding: 8px;
   }
 
-  /* rimuove margine inferiore sull'ultima GroupCard */
   .section-body :global(.group-card:last-child) {
     margin-bottom: 0;
   }

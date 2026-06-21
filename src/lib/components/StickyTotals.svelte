@@ -43,9 +43,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0;
-    padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
-    box-shadow: 0 -2px 16px rgba(0,0,0,.22);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -2px 20px rgba(0,0,0,.30);
+    border-top: 1px solid rgba(255,255,255,.08);
   }
 
   .bar-item {
@@ -53,15 +53,16 @@
     flex-direction: column;
     align-items: center;
     flex: 1;
+    gap: 2px;
   }
 
-  .kcal-item { flex: 1.3; }
+  .kcal-item { flex: 1.4; }
 
   .sep {
     width: 1px;
-    height: 32px;
-    background: rgba(255,255,255,.18);
-    margin: 0 4px;
+    height: 30px;
+    background: rgba(255,255,255,.14);
+    margin: 0 6px;
     flex-shrink: 0;
   }
 
@@ -69,16 +70,16 @@
     font-size: 18px;
     font-weight: 800;
     color: #fff;
-    line-height: 1.1;
+    line-height: 1;
+    letter-spacing: -.3px;
   }
 
   .bar-lbl {
     font-size: 9px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: .5px;
-    color: rgba(255,255,255,.55);
-    margin-top: 1px;
+    letter-spacing: .6px;
+    color: rgba(255,255,255,.48);
   }
 
   .mc { color: var(--mc); }

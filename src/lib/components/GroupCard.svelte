@@ -65,20 +65,24 @@
     box-shadow: var(--sh);
     margin-bottom: 8px;
     overflow: hidden;
+    transition: box-shadow .15s;
   }
 
   .group-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
+    padding: 11px 14px;
     background: var(--hdr2);
     color: #fff;
     gap: 8px;
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
+    min-height: 52px;
+    transition: background .15s;
   }
+  .group-header:active { background: #254d7a; }
 
   .header-left {
     display: flex;
@@ -89,11 +93,11 @@
   }
 
   .group-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: .7px;
-    opacity: .75;
+    letter-spacing: .8px;
+    opacity: .65;
   }
 
   .main-preview {
@@ -115,16 +119,24 @@
 
   .preview-kcal {
     font-size: 11px;
-    font-weight: 500;
-    opacity: .6;
+    font-weight: 400;
+    opacity: .5;
   }
 
   .header-right {
     display: flex;
     align-items: center;
-    gap: 8px;
     flex-shrink: 0;
   }
+
+  .chevron {
+    font-size: 18px;
+    opacity: .6;
+    transition: transform .2s ease-out;
+    display: block;
+    line-height: 1;
+  }
+  .chevron.open { transform: rotate(180deg); opacity: .9; }
 
   .card-footer {
     border-top: 1px solid var(--border);
@@ -140,19 +152,12 @@
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
-    padding: 4px 0;
-    opacity: .7;
+    padding: 6px 4px;
+    min-height: 32px;
+    opacity: .75;
+    transition: opacity .15s;
   }
-  .btn-reset:active { opacity: 1; }
-
-  .chevron {
-    font-size: 16px;
-    opacity: .7;
-    transition: transform .2s;
-    display: block;
-    line-height: 1;
-  }
-  .chevron.open { transform: rotate(180deg); }
+  .btn-reset:active { opacity: 1; color: var(--text); }
 
   .item-sep {
     height: 0;

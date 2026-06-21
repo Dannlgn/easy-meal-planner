@@ -1,28 +1,45 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --hdr:    #1a3a5c;
-  --hdr2:   #1e4570;
-  --bg:     #f0f4f8;
-  --card:   #ffffff;
-  --accent: #2196F3;
-  --acl:    #e3f2fd;
-  --text:   #1a2332;
-  --muted:  #718096;
-  --border: #e2e8f0;
-  --r:      12px;
-  --sh:     0 2px 10px rgba(26,58,92,.10);
-  --mc:       #FF9800;
-  --mp:       #2196F3;
-  --mf:       #4CAF50;
-  --pos:      #e53935;  /* delta sopra il piano base */
-  --neg:      #43a047;  /* delta sotto il piano base */
-  --err:      #e53e3e;  /* errore input */
-  --err-bg:   #fff5f5;  /* sfondo errore input */
-  --warn-bg:  #fff8e1;  /* sfondo avviso */
-  --warn-brd: #ffc107;  /* bordo avviso */
-  --warn-txt: #5d4037;  /* testo avviso */
-  --flash:    #fff59d;  /* colore flash animazione */
+  /* ── Brand (navy) ── */
+  --hdr:      #0f2942;   /* deep navy — sticky header bg */
+  --hdr2:     #1a3a5c;   /* mid navy — group/section/meal headers */
+
+  /* ── Surface ── */
+  --bg:       #f1f5f9;   /* slate-100 — page background */
+  --card:     #ffffff;
+
+  /* ── Interactive ── */
+  --accent:   #3b82f6;   /* blue-500 — buttons, radio, active states */
+  --accent-dk:#1d4ed8;   /* blue-700 — pressed */
+  --acl:      #eff6ff;   /* blue-50  — selection bg, input focus bg */
+
+  /* ── Text ── */
+  --text:     #0f172a;   /* slate-900 */
+  --muted:    #64748b;   /* slate-500 */
+
+  /* ── Borders & Radius & Shadow ── */
+  --border:   #e2e8f0;   /* slate-200 */
+  --r:        12px;
+  --r-sm:     8px;
+  --r-lg:     16px;
+  --sh:       0 1px 3px rgba(15,41,66,.07), 0 4px 12px rgba(15,41,66,.06);
+  --sh-lg:    0 4px 24px rgba(15,41,66,.20);
+
+  /* ── Macro nutrients (3 colori completamente distinti) ── */
+  --mc:       #f97316;   /* orange-500 — Carboidrati */
+  --mp:       #06b6d4;   /* cyan-500   — Proteine (non più uguale ad --accent!) */
+  --mf:       #a855f7;   /* purple-500 — Grassi (non più uguale a --neg!) */
+
+  /* ── Semantic ── */
+  --pos:      #ef4444;   /* red-500   — delta sopra piano / alert */
+  --neg:      #22c55e;   /* green-500 — delta sotto piano */
+  --err:      #ef4444;
+  --err-bg:   #fef2f2;   /* red-50 */
+  --warn-bg:  #fffbeb;   /* amber-50 */
+  --warn-brd: #fbbf24;   /* amber-400 */
+  --warn-txt: #78350f;   /* amber-900 */
+  --flash:    #fef08a;   /* yellow-200 */
 }
 
 body {

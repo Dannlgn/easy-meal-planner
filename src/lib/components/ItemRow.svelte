@@ -40,7 +40,6 @@
       return { ...q, [group.id]: arr };
     });
 
-    // When main item qty changes, recalculate all other items in the group
     if (isMain && val > 0) recalcGroupFromMain(group.id);
   }
 
@@ -126,7 +125,7 @@
     display: flex;
     flex-direction: column;
     border-bottom: 1px solid var(--border);
-    background: #fff;
+    background: var(--card);
     transition: opacity .2s;
   }
   .item-row:last-child { border-bottom: none; }
@@ -136,21 +135,21 @@
   .item-main-line {
     display: flex;
     align-items: center;
-    padding: 9px 14px 9px 10px;
+    padding: 10px 14px 10px 12px;
     gap: 8px;
-    min-height: 46px;
+    min-height: 48px;
   }
 
   .radio-indicator {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     border: 2px solid var(--border);
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: border-color .15s;
+    transition: border-color .15s, background .15s;
     cursor: pointer;
   }
   .radio-indicator.active {
@@ -158,8 +157,8 @@
     background: var(--acl);
   }
   .radio-dot {
-    width: 8px;
-    height: 8px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
     background: var(--accent);
   }
@@ -183,14 +182,15 @@
     text-decoration: underline;
     text-decoration-color: var(--border);
     text-underline-offset: 3px;
+    transition: opacity .15s;
   }
-  .item-name.macro-toggle:active { opacity: .7; }
+  .item-name.macro-toggle:active { opacity: .65; }
 
   .chv {
     display: inline-block;
     font-size: 9px;
     color: var(--accent);
-    transition: transform .2s;
+    transition: transform .2s ease-out;
     margin-left: 2px;
     vertical-align: middle;
   }
@@ -204,15 +204,15 @@
   }
 
   input[type="number"] {
-    width: 60px;
+    width: 62px;
     text-align: right;
     border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 7px 8px;
+    border-radius: var(--r-sm);
+    padding: 8px 8px;
     font-size: 15px;
     font-weight: 600;
     color: var(--text);
-    background: #fff;
+    background: var(--card);
     outline: none;
     -webkit-appearance: none;
     appearance: none;
@@ -245,13 +245,13 @@
   }
 
   .btn-confirm {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     border: none;
     background: var(--accent);
     color: #fff;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     cursor: pointer;
     display: flex;
@@ -259,13 +259,15 @@
     justify-content: center;
     flex-shrink: 0;
     line-height: 1;
+    transition: background .15s;
   }
+  .btn-confirm:active { background: var(--accent-dk); }
 
   /* ── Macro row ── */
   .macro-row {
     display: flex;
     gap: 14px;
-    padding: 2px 14px 9px;
+    padding: 2px 14px 10px;
   }
 
   .macro-pill {
@@ -273,10 +275,10 @@
     font-weight: 500;
   }
   .macro-pill b { font-weight: 700; }
-  .macro-pill.kcal { color: var(--text); font-weight: 600; }
-  .macro-pill.mc { color: var(--mc); }
-  .macro-pill.mp { color: var(--mp); }
-  .macro-pill.mf { color: var(--mf); }
+  .macro-pill.kcal { color: var(--muted); font-weight: 600; }
+  .macro-pill.mc   { color: var(--mc); }
+  .macro-pill.mp   { color: var(--mp); }
+  .macro-pill.mf   { color: var(--mf); }
 
   /* ── Flash animation ── */
   @keyframes flash {

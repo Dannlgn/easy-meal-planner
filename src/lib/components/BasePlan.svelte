@@ -18,7 +18,6 @@
     return { name: item.name, qty, kcal };
   }
 
-  // Single reactive computation — Svelte tracks `base` correctly
   $: mealRows = base ? MEALS.map(meal => ({
     label: meal.label,
     mt:    calcMealTotals(meal, base.quantities, base.mains),
@@ -118,9 +117,7 @@
 
 <style>
   .base-wrap {
-    padding: 16px 14px 120px;
-    max-width: 540px;
-    margin: 0 auto;
+    padding: 0 0 20px;
   }
 
   .base-label-row {
@@ -130,7 +127,7 @@
     margin-bottom: 14px;
   }
   .base-label {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--accent);
     text-transform: uppercase;
@@ -139,21 +136,24 @@
   .base-hint { font-size: 11px; color: var(--muted); }
 
   .empty-state { text-align: center; padding: 32px 16px; }
-  .empty-icon { font-size: 44px; margin-bottom: 14px; }
+  .empty-icon  { font-size: 44px; margin-bottom: 14px; }
   .empty-state h2 { font-size: 17px; font-weight: 700; color: var(--text); margin: 0 0 10px; }
-  .empty-state p { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0 0 8px; }
+  .empty-state p  { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0 0 8px; }
   .empty-state .hint { font-size: 12px; color: var(--accent); font-style: italic; margin-bottom: 24px; }
   .empty-actions { display: flex; flex-direction: column; gap: 10px; }
   .btn-meal {
     background: transparent;
     border: 1.5px solid var(--border);
     color: var(--accent);
-    padding: 11px;
+    padding: 12px;
     border-radius: var(--r);
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
+    min-height: 44px;
+    transition: background .15s;
   }
+  .btn-meal:active { background: var(--acl); }
 
   .meal-section {
     background: var(--card);
@@ -170,8 +170,8 @@
     background: var(--hdr2);
     color: #fff;
   }
-  .meal-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; opacity: .88; }
-  .meal-kcal { font-size: 12px; font-weight: 600; opacity: .85; }
+  .meal-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; opacity: .75; }
+  .meal-kcal  { font-size: 12px; font-weight: 600; opacity: .85; }
 
   .food-row {
     display: flex;
@@ -184,7 +184,7 @@
   .food-row:last-of-type { border-bottom: none; }
   .food-name { font-size: 13px; color: var(--text); flex: 1; min-width: 0; }
   .food-meta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-  .food-qty { font-size: 13px; font-weight: 700; color: var(--text); min-width: 36px; text-align: right; }
+  .food-qty  { font-size: 13px; font-weight: 700; color: var(--text); min-width: 36px; text-align: right; }
   .food-kcal { font-size: 11px; color: var(--muted); min-width: 50px; text-align: right; }
 
   .meal-macros {
@@ -195,7 +195,7 @@
     border-top: 1px solid var(--border);
   }
   .meal-macros span { font-size: 11px; font-weight: 500; }
-  .meal-macros b { font-weight: 700; }
+  .meal-macros b    { font-weight: 700; }
   .mc { color: var(--mc); }
   .mp { color: var(--mp); }
   .mf { color: var(--mf); }
@@ -209,13 +209,13 @@
     border-top: 3px solid var(--accent);
   }
   .daily-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--accent); margin-bottom: 12px; }
-  .daily-grid { display: flex; justify-content: space-around; }
-  .d-item { text-align: center; }
-  .d-val { font-size: 22px; font-weight: 800; color: var(--text); }
+  .daily-grid  { display: flex; justify-content: space-around; }
+  .d-item  { text-align: center; }
+  .d-val   { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -.4px; }
   .d-val.mc { color: var(--mc); }
   .d-val.mp { color: var(--mp); }
   .d-val.mf { color: var(--mf); }
-  .d-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
+  .d-lbl   { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
 
   .btn-save {
     width: 100%;
@@ -228,9 +228,16 @@
     font-weight: 600;
     cursor: pointer;
     margin-bottom: 8px;
+    min-height: 48px;
+    transition: background .15s, color .15s;
   }
-  .btn-save:active { opacity: .7; }
-  .btn-save.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-save:active { background: var(--bg); }
+  .btn-save.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-save.primary:active { background: var(--accent-dk); }
 
   .confirm-box {
     background: var(--warn-bg);
@@ -242,13 +249,17 @@
   .confirm-box p { font-size: 13px; color: var(--warn-txt); margin-bottom: 12px; line-height: 1.5; }
   .confirm-actions { display: flex; gap: 10px; }
   .btn-cancel {
-    flex: 1; padding: 10px; border-radius: var(--r);
-    border: 1.5px solid var(--border); background: #fff; color: var(--muted);
-    font-size: 13px; font-weight: 600; cursor: pointer;
+    flex: 1; padding: 11px; border-radius: var(--r);
+    border: 1.5px solid var(--border); background: var(--card); color: var(--muted);
+    font-size: 13px; font-weight: 600; cursor: pointer; min-height: 44px;
+    transition: background .15s;
   }
+  .btn-cancel:active { background: var(--bg); }
   .btn-confirm-ok {
-    flex: 1; padding: 10px; border-radius: var(--r);
+    flex: 1; padding: 11px; border-radius: var(--r);
     border: none; background: var(--pos); color: #fff;
-    font-size: 13px; font-weight: 700; cursor: pointer;
+    font-size: 13px; font-weight: 700; cursor: pointer; min-height: 44px;
+    transition: opacity .15s;
   }
+  .btn-confirm-ok:active { opacity: .82; }
 </style>

@@ -48,8 +48,8 @@
         <div class="step">
           <span class="step-num">5</span>
           <div>
-            <strong>Ripristina se vuoi</strong>
-            <p>Usa i bottoni <strong>↺ Pasto</strong> o <strong>↺ Tutto</strong> nell'header per tornare ai valori di default, oppure il tasto <em>Reset</em> su un singolo gruppo.</p>
+            <strong>Naviga tra i pasti</strong>
+            <p>Scorri orizzontalmente tra <em>Colazione, Spuntino, Pranzo e Cena</em> — puoi anche toccare le tab in alto o i pallini in basso. I puntini mostrano sempre in quale pasto ti trovi.</p>
           </div>
         </div>
       </div>
@@ -61,20 +61,21 @@
   .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.45);
+    background: rgba(15,41,66,.50);
     z-index: 200;
     display: flex;
     align-items: flex-end;
   }
 
   .sheet {
-    background: #fff;
+    background: var(--card);
     width: 100%;
     max-height: 85vh;
-    border-radius: 20px 20px 0 0;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
     overflow-y: auto;
     padding: 0 0 32px;
     animation: slideUp .25s ease;
+    box-shadow: var(--sh-lg);
   }
 
   @keyframes slideUp {
@@ -87,10 +88,10 @@
     align-items: center;
     justify-content: space-between;
     padding: 18px 20px 14px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
-    background: #fff;
+    background: var(--card);
     z-index: 1;
   }
 
@@ -101,10 +102,10 @@
   }
 
   .btn-close {
-    background: #f0f0f0;
+    background: var(--bg);
     border: none;
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     font-size: 13px;
     color: var(--muted);
@@ -113,8 +114,9 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    transition: background .15s;
   }
-  .btn-close:active { background: #ddd; }
+  .btn-close:active { background: var(--border); }
 
   .steps {
     padding: 16px 20px;
@@ -131,8 +133,8 @@
 
   .step-num {
     flex-shrink: 0;
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: var(--accent);
     color: #fff;

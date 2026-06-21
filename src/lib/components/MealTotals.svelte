@@ -12,19 +12,19 @@
   <div class="totals-label">Totale<br>pasto</div>
   <div class="totals-grid">
     <div class="tot-item">
-      <div class="tot-val kcal-color">{totals.kcal}</div>
+      <div class="tot-val kcal-val">{totals.kcal}</div>
       <div class="tot-lbl">kcal</div>
     </div>
     <div class="tot-item">
-      <div class="tot-val mc-color">{totals.c}g</div>
+      <div class="tot-val mc-val">{totals.c}g</div>
       <div class="tot-lbl">Carb</div>
     </div>
     <div class="tot-item">
-      <div class="tot-val mp-color">{totals.p}g</div>
+      <div class="tot-val mp-val">{totals.p}g</div>
       <div class="tot-lbl">Prot</div>
     </div>
     <div class="tot-item">
-      <div class="tot-val mf-color">{totals.f}g</div>
+      <div class="tot-val mf-val">{totals.f}g</div>
       <div class="tot-lbl">Grassi</div>
     </div>
   </div>
@@ -50,7 +50,7 @@
     letter-spacing: .6px;
     color: var(--accent);
     white-space: nowrap;
-    line-height: 1.4;
+    line-height: 1.5;
   }
 
   .totals-grid {
@@ -65,18 +65,19 @@
     font-size: 20px;
     font-weight: 800;
     line-height: 1.1;
+    letter-spacing: -.3px;
   }
 
   .tot-lbl {
     font-size: 10px;
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: .3px;
+    letter-spacing: .4px;
     margin-top: 2px;
   }
 
-  .kcal-color { color: var(--text); }
-  .mc-color { color: var(--mc); }
-  .mp-color { color: var(--mp); }
-  .mf-color { color: var(--mf); }
+  .kcal-val { color: var(--text); }
+  .mc-val   { color: var(--mc); }
+  .mp-val   { color: var(--mp); }
+  .mf-val   { color: var(--mf); }
 </style>

@@ -26,9 +26,9 @@
     } : null;
 
     const foods = meal.groups.map(group => {
-      const idx  = getMainIdx(group, mains);
-      const item = group.items[idx];
-      const qty  = qtys[group.id]?.[idx] ?? item.qty;
+      const idx   = getMainIdx(group, mains);
+      const item  = group.items[idx];
+      const qty   = qtys[group.id]?.[idx] ?? item.qty;
       const macro = MACRO_DB[item.name];
       const kcal  = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
       return { name: item.name, qty, kcal };
@@ -63,7 +63,7 @@
 <div class="today-wrap">
   {#if !base}
     <div class="no-base-banner">
-      <span>Nessun piano base salvato — vai alla tab <strong>Base</strong> per configurarlo e salvarlo. Poi usa questa tab ogni giorno.</span>
+      <span>Nessun piano base salvato — vai alla tab <strong>Base</strong> per configurarlo. Poi usa questa tab ogni giorno.</span>
     </div>
   {:else}
     <button class="btn-reset-today" on:click={resetTodayToBase}>
@@ -78,7 +78,8 @@
         <div class="meal-header-right">
           <span class="meal-kcal">{Math.round(row.today.kcal)} kcal</span>
           {#if row.delta}
-            <span class="delta-badge" class:pos={deltaClass(row.delta.kcal)==='pos'} class:neg={deltaClass(row.delta.kcal)==='neg'} class:zero={deltaClass(row.delta.kcal)==='zero'}>
+            {@const dc = deltaClass(row.delta.kcal)}
+            <span class="delta-badge" class:pos={dc==='pos'} class:neg={dc==='neg'} class:zero={dc==='zero'}>
               {sign(row.delta.kcal)}{Math.round(row.delta.kcal)}
             </span>
           {/if}
@@ -114,7 +115,6 @@
     </section>
   {/each}
 
-  <!-- Daily summary -->
   <div class="daily-card">
     <div class="daily-label">Totale giornaliero (oggi)</div>
     <div class="daily-grid">
@@ -152,30 +152,29 @@
 
 <style>
   .today-wrap {
-    padding: 16px 14px 120px;
-    max-width: 540px;
-    margin: 0 auto;
+    padding: 0 0 20px;
   }
 
   .btn-reset-today {
     width: 100%;
-    padding: 11px;
+    padding: 12px;
     border-radius: var(--r);
     border: 1.5px solid var(--border);
-    background: #fff;
+    background: var(--card);
     color: var(--muted);
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     margin-bottom: 14px;
+    min-height: 44px;
     transition: background .15s;
   }
-  .btn-reset-today:active { background: #f5f5f5; }
+  .btn-reset-today:active { background: var(--bg); }
 
   .no-base-banner {
     background: var(--warn-bg);
     border-left: 3px solid var(--warn-brd);
-    border-radius: 6px;
+    border-radius: var(--r-sm);
     padding: 10px 14px;
     font-size: 12px;
     color: var(--warn-txt);
@@ -183,7 +182,6 @@
     line-height: 1.5;
   }
 
-  /* ── Meal sections ── */
   .meal-section {
     background: var(--card);
     border-radius: var(--r);
@@ -202,11 +200,11 @@
   }
 
   .meal-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: .7px;
-    opacity: .88;
+    letter-spacing: .8px;
+    opacity: .75;
   }
 
   .meal-header-right {
@@ -224,13 +222,14 @@
   .delta-badge {
     font-size: 11px;
     font-weight: 700;
-    padding: 1px 7px;
+    padding: 2px 7px;
     border-radius: 10px;
     background: rgba(255,255,255,.15);
   }
-  .delta-badge.pos { background: rgba(76,175,80,.25); }
-  .delta-badge.neg { background: rgba(244,67,54,.25); }
-  .delta-badge.zero { opacity: .5; }
+  /* rgba hardcoded: CSS vars non sono usabili dentro rgba() */
+  .delta-badge.pos  { background: rgba(239,68,68,.22); }
+  .delta-badge.neg  { background: rgba(34,197,94,.22); }
+  .delta-badge.zero { opacity: .45; }
 
   .food-row {
     display: flex;
@@ -242,68 +241,32 @@
   }
   .food-row:last-of-type { border-bottom: none; }
 
-  .food-name {
-    font-size: 13px;
-    color: var(--text);
-    flex: 1;
-    min-width: 0;
-  }
+  .food-name { font-size: 13px; color: var(--text); flex: 1; min-width: 0; }
+  .food-meta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .food-qty  { font-size: 13px; font-weight: 700; color: var(--text); min-width: 36px; text-align: right; }
+  .food-kcal { font-size: 11px; color: var(--muted); min-width: 50px; text-align: right; }
 
-  .food-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-  }
-
-  .food-qty {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-    min-width: 36px;
-    text-align: right;
-  }
-
-  .food-kcal {
-    font-size: 11px;
-    color: var(--muted);
-    min-width: 50px;
-    text-align: right;
-  }
-
-  /* ── Macro rows ── */
   .meal-macros-row {
     border-top: 1px solid var(--border);
     background: var(--acl);
     padding: 7px 14px;
   }
 
-  .macro-today {
-    display: flex;
-    gap: 14px;
-  }
+  .macro-today { display: flex; gap: 14px; }
   .macro-today span { font-size: 11px; font-weight: 500; }
   .macro-today b { font-weight: 700; }
 
-  .macro-delta {
-    display: flex;
-    gap: 14px;
-    margin-top: 3px;
-  }
-  .macro-delta span {
-    font-size: 10px;
-    font-weight: 600;
-  }
+  .macro-delta { display: flex; gap: 14px; margin-top: 3px; }
+  .macro-delta span { font-size: 10px; font-weight: 600; }
 
   .mc { color: var(--mc); }
   .mp { color: var(--mp); }
   .mf { color: var(--mf); }
 
-  .pos { color: var(--pos) !important; }
-  .neg { color: var(--neg) !important; }
+  .pos  { color: var(--pos) !important; }
+  .neg  { color: var(--neg) !important; }
   .zero { color: var(--muted) !important; }
 
-  /* ── Daily card ── */
   .daily-card {
     background: var(--card);
     border-radius: var(--r);
@@ -321,19 +284,16 @@
     margin-bottom: 12px;
   }
 
-  .daily-grid {
-    display: flex;
-    justify-content: space-around;
-  }
+  .daily-grid { display: flex; justify-content: space-around; }
 
   .d-item { text-align: center; }
-  .d-val { font-size: 22px; font-weight: 800; color: var(--text); }
+  .d-val  { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -.4px; }
   .d-val.mc { color: var(--mc); }
   .d-val.mp { color: var(--mp); }
   .d-val.mf { color: var(--mf); }
-  .d-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
+  .d-lbl  { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
   .d-delta { font-size: 11px; font-weight: 700; margin-top: 2px; }
-  .d-delta.pos { color: var(--pos); }
-  .d-delta.neg { color: var(--neg); }
+  .d-delta.pos  { color: var(--pos); }
+  .d-delta.neg  { color: var(--neg); }
   .d-delta.zero { color: var(--muted); }
 </style>
