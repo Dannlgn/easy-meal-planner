@@ -74,6 +74,19 @@ function findGroup(id: string): FoodGroup | undefined {
   }
 }
 
+// Restituisce gli id dei gruppi fratelli (stessa MealSection, stesso pasto)
+function findSiblingGroupIds(groupId: string): string[] {
+  for (const meal of MEALS) {
+    if (!meal.sections) continue;
+    for (const section of meal.sections) {
+      if (section.groupIds.includes(groupId)) {
+        return section.groupIds.filter(id => id !== groupId);
+      }
+    }
+  }
+  return [];
+}
+
 function triggerFlash(key: string) {
   flashSet.update(s => { const n = new Set(s); n.add(key); return n; });
   setTimeout(() => {
@@ -121,13 +134,41 @@ export function recalcGroupFromMain(groupId: string) {
   const tP = (mainMacro.p / 100) * mainQty;
   const tF = (mainMacro.f / 100) * mainQty;
   const target: SmartTarget = { c: tC, p: tP, f: tF, kcal: tC * 4 + tP * 4 + tF * 9 };
+
+  // Gruppi fratelli nella stessa MealSection (es. pra_carb_leg, pra_carb_alt
+  // quando il trigger è su pra_carb_cer) — la separazione visiva NON deve
+  // interrompere il calcolo condiviso su tutta la sezione.
+  const siblingIds = findSiblingGroupIds(groupId);
+
   quantities.update(q => {
+    const next = { ...q };
+
+    // Scala i non-main nel gruppo corrente (comportamento invariato)
     const arr = [...(q[groupId] ?? group.items.map(i => i.qty))];
     group.items.forEach((item, i) => {
       if (i !== mainIdx) arr[i] = calcSmartQty(target, item.name);
     });
-    return { ...q, [groupId]: arr };
+    next[groupId] = arr;
+
+    // Propaga lo stesso target a TUTTI gli alimenti dei gruppi fratelli
+    for (const sibId of siblingIds) {
+      const sibGroup = findGroup(sibId);
+      if (!sibGroup) continue;
+      const sibArr = [...(q[sibId] ?? sibGroup.items.map(i => i.qty))];
+      sibGroup.items.forEach((item, i) => {
+        sibArr[i] = calcSmartQty(target, item.name);
+      });
+      next[sibId] = sibArr;
+    }
+
+    return next;
   });
+
+  // Flash visivo sugli alimenti dei gruppi fratelli aggiornati
+  for (const sibId of siblingIds) {
+    const sibGroup = findGroup(sibId);
+    if (sibGroup) sibGroup.items.forEach((_, i) => triggerFlash(`${sibId}_${i}`));
+  }
 }
 
 // ── Mutations ────────────────────────────────────────────
