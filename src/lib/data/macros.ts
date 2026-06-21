@@ -18,7 +18,7 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Latte intero':                     { c:  4.9, p:  3.3, f:  3.6 }, // CREA 135010
   'Latte parzialmente scremato':      { c:  5.0, p:  3.5, f:  1.5 }, // CREA 135020
   'Latte scremato':                   { c:  5.3, p:  3.6, f:  0.2 }, // CREA 135030
-  'Latte senza lattosio':             { c:  4.9, p:  3.3, f:  3.6 }, // non in CREA — stessa composizione del latte intero
+  'Latte senza lattosio':             { c:  4.9, p:  3.3, f:  3.6 }, // non in CREA — delattosazione non altera i macronutrienti, valori = latte intero
   'Farina di riso':                   { c: 80.1, p:  6.5, f:  0.8 },
   "Farina d'avena":                   { c: 65.9, p: 12.9, f:  7.0 },
   'Uova di gallina intere':           { c:  0.5, p: 12.4, f: 10.3 },
@@ -37,6 +37,7 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Mortadella Bologna IGP':               { c:  0.0, p: 15.7, f: 25.0 }, // CREA 110200
   'Salame Milano':                        { c:  1.1, p: 25.4, f: 31.0 }, // CREA 110640
   'Coppa':                                { c:  0.0, p: 28.9, f: 31.6 }, // CREA 110150
+  'Pancetta tesa':                        { c:  0.0, p: 20.9, f: 28.1 }, // CREA 110310
   'Frutta fresca':                    { c:  9.9, p:  0.5, f:  0.2 },
   'Pura Frutta Frullata – Valfrutta': { c: 13.2, p:  0.4, f:  0.1 },
   'Marmellata':                       { c: 55.0, p:  0.5, f:  0.1 },
@@ -61,6 +62,9 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Molluschi':                        { c:  2.5, p: 15.8, f:  1.5 },
   'Crostacei (media)':                { c:  0.5, p: 17.9, f:  1.5 },
   'Seitan al Naturale':               { c: 12.0, p: 24.0, f:  1.5 },
+  // ── Ricotta ──
+  'Ricotta di vacca':                 { c:  3.5, p:  8.8, f: 10.9 }, // CREA 166820
+  'Ricotta light':                    { c:  4.0, p:  9.5, f:  5.5 }, // non in CREA — media etichette commerciali (Granarolo/Galbani light)
   // ── CENA — Proteico ──
   'Uova di gallina (media)':          { c:  0.5, p: 12.4, f: 10.3 },
   'Fiocchi di Latte':                 { c:  3.2, p:  9.7, f:  7.1 },

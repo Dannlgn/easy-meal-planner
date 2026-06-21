@@ -29,6 +29,8 @@ export const MEALS: Meal[] = [
           { name: 'Yogurt greco magro 0% bianco', qty: 250, main: true },
           { name: 'Skyr bianco',                  qty: 250 },
           { name: 'Fiocchi di Latte',              qty: 200 },
+          { name: 'Ricotta di vacca',              qty: 150 },
+          { name: 'Ricotta light',                 qty: 150 },
           { name: 'Whey Protein – Concentrate',   qty:  30 },
         ],
       },
@@ -116,6 +118,7 @@ export const MEALS: Meal[] = [
           { name: 'Mortadella Bologna IGP',         qty: 60 },
           { name: 'Salame Milano',                  qty: 50 },
           { name: 'Coppa',                          qty: 60 },
+          { name: 'Pancetta tesa',                  qty: 50 },
         ],
       },
       {
@@ -175,6 +178,7 @@ export const MEALS: Meal[] = [
           { name: 'Mortadella Bologna IGP',         qty: 60 },
           { name: 'Salame Milano',                  qty: 50 },
           { name: 'Coppa',                          qty: 60 },
+          { name: 'Pancetta tesa',                  qty: 50 },
         ],
       },
       {
@@ -274,6 +278,8 @@ export const MEALS: Meal[] = [
         items: [
           { name: 'Uova di gallina (media)',           qty: 150, main: true },
           { name: 'Fiocchi di Latte',                  qty: 200 },
+          { name: 'Ricotta di vacca',                  qty: 150 },
+          { name: 'Ricotta light',                     qty: 150 },
           { name: 'Mozzarella high protein benessere', qty: 150 },
           { name: 'Ricotta high protein benessere',    qty: 200 },
           { name: 'Parmigiano',                        qty:  50 },
