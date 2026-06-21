@@ -209,7 +209,10 @@ export const MEALS: Meal[] = [
         id: 'pra_carb', label: 'Carboidrati',
         items: [
           { name: 'Pasta',              qty:  80, main: true },
+          { name: 'Pasta integrale',    qty:  80 },
+          { name: 'Pasta senza glutine',qty:  80 },
           { name: 'Riso',               qty:  80 },
+          { name: 'Riso integrale',     qty:  80 },
           { name: 'Farro',                      qty:  80 },
           { name: 'Cous Cous',                  qty:  80 },
           { name: 'Orzo perlato',               qty:  80 },
@@ -226,6 +229,8 @@ export const MEALS: Meal[] = [
         id: 'pra_prot', label: 'Proteico',
         items: [
           { name: 'Carne (tagli magri)',       qty: 150, main: true },
+          { name: 'Ricotta di vacca',          qty: 150 },
+          { name: 'Ricotta light',             qty: 150 },
           { name: 'Pesce bianco',              qty: 200 },
           { name: 'Tonno al Naturale',         qty: 130 },
           { name: 'Sgombro al Naturale',       qty: 130 },
@@ -260,7 +265,10 @@ export const MEALS: Meal[] = [
         id: 'cen_carb', label: 'Carboidrati',
         items: [
           { name: 'Pasta',              qty:  80, main: true },
+          { name: 'Pasta integrale',    qty:  80 },
+          { name: 'Pasta senza glutine',qty:  80 },
           { name: 'Riso',               qty:  80 },
+          { name: 'Riso integrale',     qty:  80 },
           { name: 'Farro',                      qty:  80 },
           { name: 'Cous Cous',                  qty:  80 },
           { name: 'Orzo perlato',               qty:  80 },
