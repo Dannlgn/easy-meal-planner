@@ -9,6 +9,7 @@
   let sliding = false;
   let scrollTimer: ReturnType<typeof setTimeout>;
   const GAP = 10;
+  const LAST_IDX = MEALS.length - 1; // 4
 
   function slideWidth(): number {
     return window.innerWidth - 44;
@@ -37,6 +38,52 @@
     }, 120);
   }
 
+  // ── Velocity-based swipe detection ───────────────────────
+  // CSS scroll-snap usa ~50% come soglia nativa; aggiungiamo
+  // velocity check (> 280 px/s) per completare anche swipe brevi e veloci.
+  let touchX0 = 0;
+  let touchT0 = 0;
+
+  function onTouchStart(e: TouchEvent) {
+    touchX0 = e.touches[0].clientX;
+    touchT0 = Date.now();
+  }
+
+  function onTouchEnd(e: TouchEvent) {
+    if (!track) return;
+    const dx       = e.changedTouches[0].clientX - touchX0;
+    const elapsed  = Math.max(1, Date.now() - touchT0);
+    const velocity = Math.abs(dx) / elapsed * 1000; // px/s
+    const slideW   = slideWidth();
+
+    const intentional = velocity > 280 || Math.abs(dx) > slideW * 0.28;
+    if (!intentional) return; // gesto troppo corto/lento: lascia fare allo snap nativo
+
+    // direzione: dx < 0 = swipe sinistra = avanza (idx+1)
+    //            dx > 0 = swipe destra  = torna  (idx-1)
+    const dir        = dx < 0 ? 1 : -1;
+    const currentIdx = Math.round(track.scrollLeft / (slideW + GAP));
+
+    // Bordo sinistro: swipe destra da Colazione → Oggi
+    if (dir === -1 && currentIdx === 0) {
+      activePage.set(6);
+      return;
+    }
+    // Bordo destro: swipe sinistra da Cena → Base
+    if (dir === 1 && currentIdx === LAST_IDX) {
+      activePage.set(0);
+      return;
+    }
+
+    // Navigazione interna al carousel
+    const targetIdx  = Math.max(0, Math.min(LAST_IDX, currentIdx + dir));
+    const targetPage = targetIdx + 1;
+    if (targetPage !== $activePage) {
+      // Impostiamo activePage e lasciamo che la $: reactive chiami scrollToPage
+      activePage.set(targetPage);
+    }
+  }
+
   // Sync tab-click → carousel position
   $: if (!sliding && mounted && track && $activePage >= 1 && $activePage <= 5) {
     scrollToPage($activePage);
@@ -46,7 +93,7 @@
     mounted = true;
     scrollToPage($activePage, false);
 
-    // First-use swipe hint: slightly scroll right then bounce back
+    // First-use swipe hint: scroll leggermente a destra poi torna
     if (!localStorage.getItem('mp_swipe_hint')) {
       setTimeout(() => {
         track?.scrollTo({ left: 90, behavior: 'smooth' });
@@ -64,6 +111,8 @@
     class="swipe-track"
     bind:this={track}
     on:scroll={onScroll}
+    on:touchstart|passive={onTouchStart}
+    on:touchend|passive={onTouchEnd}
   >
     {#each MEALS as meal}
       <div class="swipe-slide">
