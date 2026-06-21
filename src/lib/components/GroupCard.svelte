@@ -15,6 +15,8 @@
   $: mainKcal = macro && mainQty > 0
     ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * mainQty)
     : null;
+  // true quando ogni alimento del gruppo è a 0g → header "spento"
+  $: allZero  = group.items.every((item, i) => ($quantities[group.id]?.[i] ?? item.qty) === 0);
 
   function showSep(idx: number): boolean {
     if (group.items.length <= 1) return false;
@@ -29,15 +31,19 @@
 
 <div class="group-card">
   <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-  <div class="group-header" on:click={() => expanded = !expanded}>
+  <div class="group-header" class:all-zero={allZero} on:click={() => expanded = !expanded}>
     <div class="header-left">
       <span class="group-title">{group.label}</span>
       {#if !expanded}
-        <span class="main-preview">
-          {mainItem.name}
-          {#if mainQty > 0}<span class="preview-qty">{mainQty}g</span>{/if}
-          {#if mainKcal !== null}<span class="preview-kcal">{mainKcal} kcal</span>{/if}
-        </span>
+        {#if allZero}
+          <span class="inactive-hint">— non incluso</span>
+        {:else}
+          <span class="main-preview">
+            {mainItem.name}
+            {#if mainQty > 0}<span class="preview-qty">{mainQty}g</span>{/if}
+            {#if mainKcal !== null}<span class="preview-kcal">{mainKcal} kcal</span>{/if}
+          </span>
+        {/if}
       {/if}
     </div>
     <div class="header-right">
@@ -83,6 +89,14 @@
     transition: background .15s;
   }
   .group-header:active { background: #254d7a; }
+  .group-header.all-zero { opacity: .46; }
+
+  .inactive-hint {
+    font-size: 12px;
+    font-style: italic;
+    color: rgba(255,255,255,.42);
+    margin-top: 1px;
+  }
 
   .header-left {
     display: flex;

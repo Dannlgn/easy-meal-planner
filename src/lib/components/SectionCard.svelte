@@ -1,20 +1,33 @@
 <script lang="ts">
   import GroupCard from './GroupCard.svelte';
+  import { quantities } from '../stores/state';
   import type { MealSection, FoodGroup } from '../types';
 
   export let section: MealSection;
   export let groups: FoodGroup[];
 
   let expanded = false;
+
+  // Quante sottocategorie hanno almeno un alimento > 0g
+  $: activeCount    = groups.filter(g =>
+    g.items.some((item, i) => ($quantities[g.id]?.[i] ?? item.qty) > 0)
+  ).length;
+  $: sectionAllZero = activeCount === 0;
 </script>
 
 <div class="section-card">
   <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-  <div class="section-header" on:click={() => expanded = !expanded}>
+  <div class="section-header" class:all-zero={sectionAllZero} on:click={() => expanded = !expanded}>
     <div class="header-left">
       <span class="section-title">{section.label}</span>
       {#if !expanded}
-        <span class="section-count">{groups.length} {groups.length === 1 ? 'categoria' : 'categorie'}</span>
+        {#if sectionAllZero}
+          <span class="section-count zero">— non incluso</span>
+        {:else if activeCount < groups.length}
+          <span class="section-count">{activeCount} {activeCount === 1 ? 'attiva' : 'attive'} su {groups.length}</span>
+        {:else}
+          <span class="section-count">{groups.length} {groups.length === 1 ? 'categoria' : 'categorie'}</span>
+        {/if}
       {/if}
     </div>
     <span class="chevron" class:open={expanded}>▾</span>
@@ -52,6 +65,12 @@
     transition: background .15s;
   }
   .section-header:active { background: var(--accent-dk); }
+  .section-header.all-zero { opacity: .50; }
+
+  .section-count.zero {
+    color: rgba(255,255,255,.40);
+    font-style: italic;
+  }
 
   .header-left {
     display: flex;
