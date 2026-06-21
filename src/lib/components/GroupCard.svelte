@@ -35,7 +35,7 @@
     <div class="header-left">
       <span class="group-title">{group.label}</span>
       {#if !expanded}
-        {#if allZero}
+        {#if mainQty === 0}
           <span class="inactive-hint">— non incluso</span>
         {:else}
           <span class="main-preview">
