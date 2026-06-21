@@ -159,6 +159,7 @@ export function recalcGroupFromMain(groupId: string) {
       if (sibCurrent.every(v => v === 0)) continue; // rispetta esclusione utente
       const sibArr = [...sibCurrent];
       sibGroup.items.forEach((item, i) => {
+        if (sibCurrent[i] === 0) return; // item escluso volontariamente: non toccare
         sibArr[i] = calcSmartQty(target, item.name);
       });
       next[sibId] = sibArr;
