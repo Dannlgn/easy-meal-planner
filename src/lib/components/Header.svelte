@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, afterUpdate } from 'svelte';
   import { activePage, resetMeal, quantities, mainItems, savedBase, calcMealTotals } from '../stores/state';
   import { MEALS } from '../data/meals';
   import HowTo from './HowTo.svelte';
@@ -16,7 +17,7 @@
   ];
 
   $: isMealTab = $activePage >= 1 && $activePage <= 5;
-  $: mealIdx   = $activePage - 1; // 0-4 when on a meal tab
+  $: mealIdx   = $activePage - 1;
 
   function isMealModified(mealIdx: number): boolean {
     const meal = MEALS[mealIdx];
@@ -24,7 +25,6 @@
     const qtys  = $quantities;
     const mains = $mainItems;
     if (!base) {
-      // compare vs data defaults
       for (const g of meal.groups) {
         const dm = Math.max(0, g.items.findIndex(it => it.main));
         if ((mains[g.id] ?? dm) !== dm) return true;
@@ -33,13 +33,33 @@
       }
       return false;
     }
-    // compare vs saved base via kcal delta
     const todayTot = calcMealTotals(meal, qtys, mains);
     const baseTot  = calcMealTotals(meal, base.quantities, base.mains);
     return Math.abs(todayTot.kcal - baseTot.kcal) > 1;
   }
 
-  function resetAll() { MEALS.forEach((_, i) => resetMeal(i)); }
+  // ── Tab scroll hints ──────────────────────────────────────
+  let tabsEl: HTMLElement;
+  let showLeftFade  = false;
+  let showRightFade = true;
+
+  function updateFades() {
+    if (!tabsEl) return;
+    showLeftFade  = tabsEl.scrollLeft > 8;
+    showRightFade = tabsEl.scrollLeft + tabsEl.clientWidth < tabsEl.scrollWidth - 8;
+  }
+
+  function scrollActiveIntoView() {
+    const active = tabsEl?.querySelector('.tab.active') as HTMLElement | null;
+    active?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+  }
+
+  onMount(() => { updateFades(); });
+
+  afterUpdate(() => {
+    scrollActiveIntoView();
+    updateFades();
+  });
 </script>
 
 <header>
@@ -51,22 +71,37 @@
     <div class="header-actions"></div>
   </div>
 
-  <div class="tabs" role="tablist" aria-label="Navigazione">
-    {#each TABS as tab}
-      <button
-        class="tab"
-        class:active={$activePage === tab.page}
-        class:special={tab.page === 0 || tab.page === 6}
-        role="tab"
-        aria-selected={$activePage === tab.page}
-        on:click={() => activePage.set(tab.page)}
-      >
-        {tab.label}
-        {#if tab.page >= 1 && tab.page <= 5 && isMealModified(tab.page - 1)}
-          <span class="mod-dot" aria-label="modificato"></span>
-        {/if}
-      </button>
-    {/each}
+  <div class="tabs-wrap">
+    {#if showLeftFade}
+      <div class="fade fade-left" aria-hidden="true"></div>
+    {/if}
+    {#if showRightFade}
+      <div class="fade fade-right" aria-hidden="true"></div>
+    {/if}
+
+    <div
+      class="tabs"
+      role="tablist"
+      aria-label="Navigazione"
+      bind:this={tabsEl}
+      on:scroll={updateFades}
+    >
+      {#each TABS as tab}
+        <button
+          class="tab"
+          class:active={$activePage === tab.page}
+          class:special={tab.page === 0 || tab.page === 6}
+          role="tab"
+          aria-selected={$activePage === tab.page}
+          on:click={() => activePage.set(tab.page)}
+        >
+          {tab.label}
+          {#if tab.page >= 1 && tab.page <= 5 && isMealModified(tab.page - 1)}
+            <span class="mod-dot" aria-label="modificato"></span>
+          {/if}
+        </button>
+      {/each}
+    </div>
   </div>
 </header>
 
@@ -122,6 +157,28 @@
     display: flex;
     gap: 6px;
     flex-shrink: 0;
+  }
+
+  /* ── Tab container con fade ── */
+  .tabs-wrap {
+    position: relative;
+  }
+
+  .fade {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 36px;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .fade-left {
+    left: 0;
+    background: linear-gradient(to right, var(--hdr), transparent);
+  }
+  .fade-right {
+    right: 0;
+    background: linear-gradient(to left, var(--hdr), transparent);
   }
 
   .tabs {
