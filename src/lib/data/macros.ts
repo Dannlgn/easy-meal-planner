@@ -8,7 +8,11 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Fette biscottate':                 { c: 74.9, p:  9.9, f:  5.5 },
   'Pane comune':                      { c: 54.3, p:  8.1, f:  1.0 },
   'Pane integrale':                   { c: 40.5, p:  7.9, f:  1.4 }, // CREA 000570
-  'Cioccolato fondente':              { c: 50.1, p:  4.9, f: 31.3 },
+  'Cioccolato al latte':              { c: 58.0, p:  7.5, f: 30.0 }, // media commerciale (Lindt/Milka)
+  'Cioccolato fondente':              { c: 50.1, p:  4.9, f: 31.3 }, // voce generica — mantenuta per compatibilità
+  'Cioccolato fondente 70%':          { c: 44.0, p:  6.0, f: 43.0 }, // media commerciale (Lindt 70%)
+  'Cioccolato fondente 80%':          { c: 37.0, p:  7.0, f: 46.0 }, // media commerciale (Lindt 80%)
+  'Cioccolato fondente 90%':          { c: 31.0, p:  8.0, f: 50.0 }, // media commerciale (Lindt 90%)
   'Frutta secca e oleosa (media)':    { c: 11.7, p: 18.3, f: 54.1 },
   'Nocciolata – Rigoni di Asiago':    { c: 54.0, p:  5.8, f: 31.0 },
   'Nocciolata':                       { c: 54.0, p:  5.8, f: 31.0 },
@@ -25,6 +29,7 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Latte di soia':                    { c:  3.3, p:  3.3, f:  1.8 }, // non in CREA — media Alpro/Sojasun
   'Farina di riso':                   { c: 80.1, p:  6.5, f:  0.8 },
   "Farina d'avena":                   { c: 65.9, p: 12.9, f:  7.0 },
+  "Fiocchi d'avena":                  { c: 64.9, p: 13.0, f:  6.9 }, // CREA 000440
   'Uova di gallina intere':           { c:  0.5, p: 12.4, f: 10.3 },
   'Uova di gallina – albume':         { c:  0.7, p: 10.9, f:  0.2 },
   // ── SPUNTINO ──
