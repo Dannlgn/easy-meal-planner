@@ -9,8 +9,7 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Pane comune':                      { c: 54.3, p:  8.1, f:  1.0 },
   'Pane integrale':                   { c: 40.5, p:  7.9, f:  1.4 }, // CREA 000570
   'Cioccolato al latte':              { c: 58.0, p:  7.5, f: 30.0 }, // media commerciale (Lindt/Milka)
-  'Cioccolato fondente':              { c: 50.1, p:  4.9, f: 31.3 }, // voce generica — mantenuta per compatibilità
-  'Cioccolato fondente 70%':          { c: 44.0, p:  6.0, f: 43.0 }, // media commerciale (Lindt 70%)
+'Cioccolato fondente 70%':          { c: 44.0, p:  6.0, f: 43.0 }, // media commerciale (Lindt 70%)
   'Cioccolato fondente 80%':          { c: 37.0, p:  7.0, f: 46.0 }, // media commerciale (Lindt 80%)
   'Cioccolato fondente 90%':          { c: 31.0, p:  8.0, f: 50.0 }, // media commerciale (Lindt 90%)
   'Frutta secca e oleosa (media)':    { c: 11.7, p: 18.3, f: 54.1 },
