@@ -347,6 +347,7 @@ export const MEALS: Meal[] = [
           { name: 'Asiago',                             qty:  50 },
           { name: 'Hamburger Vegetale – Valsoia',       qty: 130 },
           { name: 'Tofu al naturale',                   qty: 120 },
+          { name: 'Merluzzo',                           qty: 200 },
           { name: 'Salmone',                            qty: 100 },
           { name: 'Salmone affumicato',                 qty: 100 },
           { name: "Tonno all'olio d'oliva sgocciolato", qty:  90 },
