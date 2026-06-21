@@ -83,7 +83,6 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Ricotta di vacca':                 { c:  3.5, p:  8.8, f: 10.9 }, // CREA 166820
   'Ricotta light':                    { c:  4.0, p:  9.5, f:  5.5 }, // non in CREA — media etichette commerciali (Granarolo/Galbani light)
   // ── CENA — Proteico ──
-  'Uova di gallina (media)':          { c:  0.5, p: 12.4, f: 10.3 },
   'Fiocchi di Latte':                 { c:  3.2, p:  9.7, f:  7.1 },
   'Mozzarella high protein benessere':{ c:  2.0, p: 18.0, f: 14.0 },
   'Ricotta high protein benessere':   { c:  4.0, p: 12.0, f:  8.0 },

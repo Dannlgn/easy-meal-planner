@@ -335,7 +335,7 @@ export const MEALS: Meal[] = [
       {
         id: 'cen_prot', label: 'Proteico',
         items: [
-          { name: 'Uova di gallina (media)',            qty: 150, main: true },
+          { name: 'Uova di gallina intere',              qty: 150, main: true },
           { name: 'Petto di pollo',                     qty: 150 },
           { name: 'Tacchino (petto)',                   qty: 150 },
           { name: 'Fiocchi di Latte',                   qty: 200 },
