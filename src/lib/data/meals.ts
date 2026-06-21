@@ -84,7 +84,7 @@ export const MEALS: Meal[] = [
           { name: 'Farina di riso',           qty:  40, main: true },
           { name: 'Nocciolata',               qty:  10 },
           { name: 'Uova di gallina – albume', qty: 200 },
-          { name: 'Uova di gallina intere',   qty:  50 },
+          { name: 'Uova di gallina intere',   qty:  55, unitSize: 55, unitLabel: 'uova' },
         ],
       },
       {
@@ -92,7 +92,7 @@ export const MEALS: Meal[] = [
         items: [
           { name: 'Pane comune',              qty:  60, main: true },
           { name: 'Uova di gallina – albume', qty: 100 },
-          { name: 'Uova di gallina intere',   qty: 100 },
+          { name: 'Uova di gallina intere',   qty: 110, unitSize: 55, unitLabel: 'uova' },
         ],
       },
     ],
@@ -316,7 +316,7 @@ export const MEALS: Meal[] = [
         id: 'pra_prot_uov', label: 'Proteico – Uova',
         items: [
           { name: 'Uova di gallina – albume', qty: 300 },
-          { name: 'Uova di gallina intere',   qty: 150, main: true },
+          { name: 'Uova di gallina intere',   qty: 165, main: true, unitSize: 55, unitLabel: 'uova' },
         ],
       },
       {
@@ -427,7 +427,7 @@ export const MEALS: Meal[] = [
         id: 'cen_prot_uov', label: 'Proteico – Uova',
         items: [
           { name: 'Uova di gallina – albume', qty: 300 },
-          { name: 'Uova di gallina intere',   qty: 150, main: true },
+          { name: 'Uova di gallina intere',   qty: 165, main: true, unitSize: 55, unitLabel: 'uova' },
         ],
       },
       {

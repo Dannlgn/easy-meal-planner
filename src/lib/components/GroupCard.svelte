@@ -40,7 +40,12 @@
         {:else}
           <span class="main-preview">
             {mainItem.name}
-            {#if mainQty > 0}<span class="preview-qty">{mainQty}g</span>{/if}
+            {#if mainQty > 0}
+              <span class="preview-qty">
+                {mainItem.unitSize ? Math.round(mainQty / mainItem.unitSize) : mainQty}{mainItem.unitSize ? '' : 'g'}
+                {#if mainItem.unitLabel}&nbsp;{mainItem.unitLabel}{/if}
+              </span>
+            {/if}
             {#if mainKcal !== null}<span class="preview-kcal">{mainKcal} kcal</span>{/if}
           </span>
         {/if}

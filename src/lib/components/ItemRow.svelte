@@ -8,7 +8,10 @@
   export let idx: number;
   export let isMain: boolean;
 
-  $: qty      = $quantities[group.id]?.[idx] ?? item.qty;
+  $: qty        = $quantities[group.id]?.[idx] ?? item.qty;
+  $: unitSize   = item.unitSize ?? 1;
+  $: unitLabel  = item.unitLabel ?? 'gr';
+  $: displayQty = item.unitSize ? Math.round(qty / item.unitSize) : qty;
   $: macro    = MACRO_DB[item.name];
   $: hasMacro = !!macro;
   $: key      = `${group.id}_${idx}`;
@@ -26,14 +29,15 @@
 
   function handleBlur(e: FocusEvent) {
     const el  = e.currentTarget as HTMLInputElement;
-    const val = Math.round(parseFloat(el.value));
-    if (!Number.isFinite(val) || val < 0) {
-      el.value = String(qty);
+    const units = Math.round(parseFloat(el.value));
+    if (!Number.isFinite(units) || units < 0) {
+      el.value = String(displayQty);
       invalid = true;
       setTimeout(() => { invalid = false; }, 600);
       return;
     }
 
+    const val = units * unitSize; // converti unità → grammi per lo store
     quantities.update(q => {
       const arr = [...(q[group.id] ?? group.items.map(i => i.qty))];
       arr[idx] = val;
@@ -95,9 +99,9 @@
         inputmode="numeric"
         min="0"
         step="1"
-        value={qty}
+        value={displayQty}
         class:invalid
-        aria-label="{item.name} grammi"
+        aria-label="{item.name} {unitLabel}"
         on:blur={handleBlurWrapper}
         on:focus={handleFocus}
         on:keydown={handleKeydown}
@@ -105,7 +109,7 @@
       {#if focused}
         <button class="btn-confirm" on:mousedown|preventDefault={confirmValue} aria-label="Conferma">✓</button>
       {:else}
-        <span class="qty-unit">gr</span>
+        <span class="qty-unit">{unitLabel}</span>
       {/if}
     </div>
   </div>

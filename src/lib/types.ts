@@ -2,6 +2,8 @@ export interface FoodItem {
   name: string;
   qty: number;
   main?: boolean;
+  unitSize?: number;  // grammi per unità (es. 55 per un uovo medio)
+  unitLabel?: string; // etichetta unità (es. 'uova')
 }
 
 export interface FoodGroup {
