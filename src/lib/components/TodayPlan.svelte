@@ -25,14 +25,18 @@
       f:    todayTot.f - baseTot.f,
     } : null;
 
-    const foods = meal.groups.map(group => {
-      const idx   = getMainIdx(group, mains);
-      const item  = group.items[idx];
-      const qty   = qtys[group.id]?.[idx] ?? item.qty;
-      const macro = MACRO_DB[item.name];
-      const kcal  = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
-      return { name: item.name, qty, kcal };
-    });
+    const foods = meal.groups
+      .map(group => {
+        const idx       = getMainIdx(group, mains);
+        const item      = group.items[idx];
+        const qty       = qtys[group.id]?.[idx] ?? item.qty;
+        const macro     = MACRO_DB[item.name];
+        const kcal      = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
+        const unitSize  = item.unitSize;
+        const unitLabel = item.unitLabel;
+        return { name: item.name, qty, kcal, unitSize, unitLabel };
+      })
+      .filter(f => f.qty > 0);
 
     return { label: meal.label, today: todayTot, base: baseTot, delta, foods } satisfies MealRow;
   });
@@ -72,6 +76,7 @@
   {/if}
 
   {#each mealRows as row}
+    {#if row.foods.length === 0}{:else}
     <section class="meal-section">
       <div class="meal-header">
         <span class="meal-label">{row.label}</span>
@@ -90,7 +95,10 @@
         <div class="food-row">
           <span class="food-name">{food.name}</span>
           <span class="food-meta">
-            <span class="food-qty">{food.qty}g</span>
+            <span class="food-qty">
+              {food.unitSize ? Math.round(food.qty / food.unitSize) : food.qty}{food.unitSize ? '' : 'g'}
+              {#if food.unitLabel}&nbsp;{food.unitLabel}{/if}
+            </span>
             {#if food.kcal !== null}
               <span class="food-kcal">{food.kcal} kcal</span>
             {/if}
@@ -113,6 +121,7 @@
         {/if}
       </div>
     </section>
+    {/if}
   {/each}
 
   <div class="daily-card">
