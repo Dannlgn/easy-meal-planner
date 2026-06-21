@@ -8,11 +8,15 @@
   let expanded = false;
 </script>
 
-<div class="section-wrap">
+<div class="section-card">
   <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
   <div class="section-header" on:click={() => expanded = !expanded}>
-    <span class="section-title">{section.label}</span>
-    <div class="section-line"></div>
+    <div class="header-left">
+      <span class="section-title">{section.label}</span>
+      {#if !expanded}
+        <span class="section-count">{groups.length} {groups.length === 1 ? 'categoria' : 'categorie'}</span>
+      {/if}
+    </div>
     <span class="chevron" class:open={expanded}>▾</span>
   </div>
 
@@ -26,47 +30,65 @@
 </div>
 
 <style>
-  .section-wrap {
-    margin-bottom: 4px;
+  .section-card {
+    background: var(--card);
+    border-radius: var(--r);
+    box-shadow: var(--sh);
+    margin-bottom: 10px;
+    overflow: hidden;
   }
 
   .section-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 4px 6px;
+    justify-content: space-between;
+    padding: 13px 14px;
+    background: var(--accent);
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
+    gap: 8px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
   }
 
   .section-title {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--accent);
+    letter-spacing: 1.2px;
+    color: #fff;
     white-space: nowrap;
-    flex-shrink: 0;
   }
 
-  .section-line {
-    flex: 1;
-    height: 1px;
-    background: var(--border);
+  .section-count {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, .6);
+    white-space: nowrap;
   }
 
   .chevron {
-    font-size: 15px;
-    color: var(--accent);
-    opacity: .7;
+    font-size: 16px;
+    color: rgba(255, 255, 255, .85);
     transition: transform .2s;
-    flex-shrink: 0;
     line-height: 1;
+    flex-shrink: 0;
   }
   .chevron.open { transform: rotate(180deg); }
 
   .section-body {
-    padding-left: 8px;
+    background: var(--bg);
+    padding: 8px;
+  }
+
+  /* rimuove margine inferiore sull'ultima GroupCard */
+  .section-body :global(.group-card:last-child) {
+    margin-bottom: 0;
   }
 </style>
