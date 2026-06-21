@@ -10,10 +10,17 @@ export interface FoodGroup {
   items: FoodItem[];
 }
 
+export interface MealSection {
+  id: string;
+  label: string;
+  groupIds: string[]; // IDs dei FoodGroup che appartengono a questa sezione
+}
+
 export interface Meal {
   id: string;
   label: string;
   groups: FoodGroup[];
+  sections?: MealSection[]; // quando presente, MealPanel usa la struttura gerarchica
 }
 
 export interface MacroData {

@@ -248,6 +248,12 @@ export const MEALS: Meal[] = [
 
   {
     id: 'pra', label: 'Pranzo',
+    sections: [
+      { id: 'pra_sec_carb', label: 'Carboidrati', groupIds: ['pra_carb_cer', 'pra_carb_leg', 'pra_carb_alt'] },
+      { id: 'pra_sec_prot', label: 'Proteico',    groupIds: ['pra_prot_car', 'pra_prot_pes', 'pra_prot_uov', 'pra_prot_lat', 'pra_prot_veg'] },
+      { id: 'pra_sec_verd', label: 'Verdura',     groupIds: ['pra_verd'] },
+      { id: 'pra_sec_gr',   label: 'Grassi',      groupIds: ['pra_gr'] },
+    ],
     groups: [
       {
         id: 'pra_carb_cer', label: 'Carboidrati – Pasta e cereali',
@@ -353,6 +359,12 @@ export const MEALS: Meal[] = [
 
   {
     id: 'cen', label: 'Cena',
+    sections: [
+      { id: 'cen_sec_carb', label: 'Carboidrati', groupIds: ['cen_carb_cer', 'cen_carb_leg', 'cen_carb_alt'] },
+      { id: 'cen_sec_prot', label: 'Proteico',    groupIds: ['cen_prot_car', 'cen_prot_pes', 'cen_prot_uov', 'cen_prot_lat', 'cen_prot_veg'] },
+      { id: 'cen_sec_verd', label: 'Verdura',     groupIds: ['cen_verd'] },
+      { id: 'cen_sec_gr',   label: 'Grassi',      groupIds: ['cen_gr'] },
+    ],
     groups: [
       {
         id: 'cen_carb_cer', label: 'Carboidrati – Pasta e cereali',
