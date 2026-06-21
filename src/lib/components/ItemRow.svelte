@@ -130,7 +130,7 @@
     transition: opacity .2s;
   }
   .item-row:last-child { border-bottom: none; }
-  .item-row.is-main    { background: #f5f9ff; }
+  .item-row.is-main    { background: var(--acl); }
   .item-row.zeroed     { opacity: .38; }
 
   .item-main-line {
@@ -226,8 +226,8 @@
     background: var(--acl);
   }
   input[type="number"].invalid {
-    border-color: #e53e3e;
-    background: #fff5f5;
+    border-color: var(--err);
+    background: var(--err-bg);
     animation: shake .3s ease;
   }
   @keyframes shake {
@@ -280,12 +280,12 @@
 
   /* ── Flash animation ── */
   @keyframes flash {
-    0%   { background: #fff59d; }
-    100% { background: #fff; }
+    0%   { background: var(--flash); }
+    100% { background: var(--card); }
   }
   @keyframes flash-main {
-    0%   { background: #fff59d; }
-    100% { background: #f5f9ff; }
+    0%   { background: var(--flash); }
+    100% { background: var(--acl); }
   }
   .item-row.updated          { animation: flash      .75s ease-out forwards; }
   .item-row.is-main.updated  { animation: flash-main .75s ease-out forwards; }

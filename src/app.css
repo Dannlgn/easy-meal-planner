@@ -12,9 +12,17 @@
   --border: #e2e8f0;
   --r:      12px;
   --sh:     0 2px 10px rgba(26,58,92,.10);
-  --mc:     #FF9800;
-  --mp:     #2196F3;
-  --mf:     #4CAF50;
+  --mc:       #FF9800;
+  --mp:       #2196F3;
+  --mf:       #4CAF50;
+  --pos:      #e53935;  /* delta sopra il piano base */
+  --neg:      #43a047;  /* delta sotto il piano base */
+  --err:      #e53e3e;  /* errore input */
+  --err-bg:   #fff5f5;  /* sfondo errore input */
+  --warn-bg:  #fff8e1;  /* sfondo avviso */
+  --warn-brd: #ffc107;  /* bordo avviso */
+  --warn-txt: #5d4037;  /* testo avviso */
+  --flash:    #fff59d;  /* colore flash animazione */
 }
 
 body {

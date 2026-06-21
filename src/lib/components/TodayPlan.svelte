@@ -173,12 +173,12 @@
   .btn-reset-today:active { background: #f5f5f5; }
 
   .no-base-banner {
-    background: #fff8e1;
-    border-left: 3px solid #ffc107;
+    background: var(--warn-bg);
+    border-left: 3px solid var(--warn-brd);
     border-radius: 6px;
     padding: 10px 14px;
     font-size: 12px;
-    color: #795548;
+    color: var(--warn-txt);
     margin-bottom: 14px;
     line-height: 1.5;
   }
@@ -274,7 +274,7 @@
   /* ── Macro rows ── */
   .meal-macros-row {
     border-top: 1px solid var(--border);
-    background: #f8faff;
+    background: var(--acl);
     padding: 7px 14px;
   }
 
@@ -299,8 +299,8 @@
   .mp { color: var(--mp); }
   .mf { color: var(--mf); }
 
-  .pos { color: #e53935 !important; }
-  .neg { color: #43a047 !important; }
+  .pos { color: var(--pos) !important; }
+  .neg { color: var(--neg) !important; }
   .zero { color: var(--muted) !important; }
 
   /* ── Daily card ── */
@@ -333,7 +333,7 @@
   .d-val.mf { color: var(--mf); }
   .d-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
   .d-delta { font-size: 11px; font-weight: 700; margin-top: 2px; }
-  .d-delta.pos { color: #e53935; }
-  .d-delta.neg { color: #43a047; }
+  .d-delta.pos { color: var(--pos); }
+  .d-delta.neg { color: var(--neg); }
   .d-delta.zero { color: var(--muted); }
 </style>

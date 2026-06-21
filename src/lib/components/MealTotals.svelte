@@ -32,7 +32,7 @@
 
 <style>
   .meal-totals {
-    background: #f0f7ff;
+    background: var(--acl);
     border-radius: var(--r);
     box-shadow: var(--sh);
     padding: 12px 16px;

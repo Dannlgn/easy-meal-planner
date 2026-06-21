@@ -191,7 +191,7 @@
     display: flex;
     gap: 14px;
     padding: 8px 14px;
-    background: #f8faff;
+    background: var(--acl);
     border-top: 1px solid var(--border);
   }
   .meal-macros span { font-size: 11px; font-weight: 500; }
@@ -233,13 +233,13 @@
   .btn-save.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
 
   .confirm-box {
-    background: #fff8e1;
-    border: 1.5px solid #ffc107;
+    background: var(--warn-bg);
+    border: 1.5px solid var(--warn-brd);
     border-radius: var(--r);
     padding: 14px;
     margin-bottom: 8px;
   }
-  .confirm-box p { font-size: 13px; color: #5d4037; margin-bottom: 12px; line-height: 1.5; }
+  .confirm-box p { font-size: 13px; color: var(--warn-txt); margin-bottom: 12px; line-height: 1.5; }
   .confirm-actions { display: flex; gap: 10px; }
   .btn-cancel {
     flex: 1; padding: 10px; border-radius: var(--r);
@@ -248,7 +248,7 @@
   }
   .btn-confirm-ok {
     flex: 1; padding: 10px; border-radius: var(--r);
-    border: none; background: #f44336; color: #fff;
+    border: none; background: var(--pos); color: #fff;
     font-size: 13px; font-weight: 700; cursor: pointer;
   }
 </style>
