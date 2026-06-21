@@ -44,7 +44,8 @@
       return { ...q, [group.id]: arr };
     });
 
-    if (isMain && val > 0) recalcGroupFromMain(group.id);
+    if (!isMain && val > 0) setMain(group.id, idx); // promuovi a main + ricalcola
+    else if (isMain && val > 0) recalcGroupFromMain(group.id);
   }
 
   function handleKeydown(e: KeyboardEvent) {
