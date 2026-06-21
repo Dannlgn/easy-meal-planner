@@ -150,11 +150,14 @@ export function recalcGroupFromMain(groupId: string) {
     });
     next[groupId] = arr;
 
-    // Propaga lo stesso target a TUTTI gli alimenti dei gruppi fratelli
+    // Propaga lo stesso target ai gruppi fratelli, ma solo se l'utente
+    // non li ha esplicitamente azzerati (tutti gli item a 0 = escluso volontariamente)
     for (const sibId of siblingIds) {
       const sibGroup = findGroup(sibId);
       if (!sibGroup) continue;
-      const sibArr = [...(q[sibId] ?? sibGroup.items.map(i => i.qty))];
+      const sibCurrent = q[sibId] ?? sibGroup.items.map(i => i.qty);
+      if (sibCurrent.every(v => v === 0)) continue; // rispetta esclusione utente
+      const sibArr = [...sibCurrent];
       sibGroup.items.forEach((item, i) => {
         sibArr[i] = calcSmartQty(target, item.name);
       });
@@ -164,10 +167,14 @@ export function recalcGroupFromMain(groupId: string) {
     return next;
   });
 
-  // Flash visivo sugli alimenti dei gruppi fratelli aggiornati
+  // Flash visivo solo sui gruppi fratelli che sono stati effettivamente aggiornati
+  const currentQtys = get(quantities);
   for (const sibId of siblingIds) {
     const sibGroup = findGroup(sibId);
-    if (sibGroup) sibGroup.items.forEach((_, i) => triggerFlash(`${sibId}_${i}`));
+    if (!sibGroup) continue;
+    const sibCurrent = currentQtys[sibId] ?? sibGroup.items.map(i => i.qty);
+    if (sibCurrent.every(v => v === 0)) continue;
+    sibGroup.items.forEach((_, i) => triggerFlash(`${sibId}_${i}`));
   }
 }
 
