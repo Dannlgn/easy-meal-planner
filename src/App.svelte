@@ -26,12 +26,12 @@
       const dy = e.changedTouches[0].clientY - y0;
 
       // Esclude gesti verticali (scroll pagina) e tap
-      if (Math.abs(dy) >= Math.abs(dx) || Math.abs(dx) < 8) return;
+      if (Math.abs(dy) >= Math.abs(dx) || Math.abs(dx) < 4) return;
 
       const elapsed  = Math.max(1, Date.now() - t0);
       const velocity = Math.abs(dx) / elapsed;            // px/ms
       const dist     = Math.abs(dx) / window.innerWidth;
-      const intentional = velocity >= 0.30 || dist >= 0.20;
+      const intentional = velocity >= 0.10 || dist >= 0.05;
       if (!intentional) return;
 
       if (dx < 0 && page === 6) { activePage.set(1); return; } // Oggi → Colazione

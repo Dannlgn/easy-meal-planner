@@ -5,8 +5,8 @@
   import { MEALS } from '../data/meals';
 
   const LAST_IDX       = MEALS.length - 1; // 4
-  const DIST_THRESHOLD = 0.20;   // 20% larghezza schermo
-  const VEL_THRESHOLD  = 0.30;   // px/ms  (= 300 px/s)
+  const DIST_THRESHOLD = 0.05;   // 5% larghezza schermo
+  const VEL_THRESHOLD  = 0.10;   // px/ms  (= 100 px/s)
 
   let outer:  HTMLElement;  // wrapper overflow:hidden
   let slider: HTMLElement;  // flex container traslato
@@ -93,7 +93,7 @@
     const totalDy = e.changedTouches[0].clientY - touchY0;
 
     // Asse orizzontale: |dx| > |dy| con spostamento minimo di 8px
-    const horizontal = Math.abs(totalDx) > Math.abs(totalDy) && Math.abs(totalDx) >= 8;
+    const horizontal = Math.abs(totalDx) > Math.abs(totalDy) && Math.abs(totalDx) >= 4;
     if (!horizontal) {
       if (dragDx !== 0) animateTo($activePage - 1, true); // ripristina se era spostato
       return;
