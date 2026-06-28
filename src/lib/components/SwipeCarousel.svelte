@@ -222,34 +222,46 @@
 </div>
 
 <style>
+  /* Occupa tutto lo spazio rimanente sotto l'header */
   .carousel-wrap {
-    padding-bottom: 86px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   .carousel-outer {
+    flex: 1;
+    min-height: 0;
     overflow: hidden;
     width: 100%;
   }
 
   .carousel-slider {
     display: flex;
+    height: 100%;
     will-change: transform;
   }
 
+  /* Ogni slide scrolla il proprio contenuto in modo indipendente */
   .carousel-slide {
     flex: 0 0 100%;
     width: 100%;
     min-width: 0;
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
-  /* Pasti: padding leggero, il carousel-wrap ha il padding bottom */
+  /* 86px bottom = spazio per StickyTotals fisso */
   .slide-inner {
-    padding: 14px 16px 8px;
+    padding: 14px 16px 86px;
   }
 
-  /* Oggi / Base: replica <main> originale */
+  /* Oggi / Base */
   .page-slide {
-    padding: 14px 14px 14px;
+    padding: 14px 14px 86px;
     max-width: 560px;
     margin: 0 auto;
     box-sizing: border-box;
