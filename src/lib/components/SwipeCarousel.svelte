@@ -4,121 +4,153 @@
   import { activePage } from '../stores/state';
   import { MEALS } from '../data/meals';
 
-  let track: HTMLElement;
+  const LAST_IDX       = MEALS.length - 1; // 4
+  const DIST_THRESHOLD = 0.20;   // 20% larghezza schermo
+  const VEL_THRESHOLD  = 0.30;   // px/ms  (= 300 px/s)
+
+  let outer:  HTMLElement;  // wrapper overflow:hidden
+  let slider: HTMLElement;  // flex container traslato
   let mounted = false;
-  let sliding = false;
-  let scrollTimer: ReturnType<typeof setTimeout>;
-  const GAP = 10;
-  const LAST_IDX = MEALS.length - 1; // 4
+  let animLock = false;     // blocca il reactive durante navigateTo
 
-  function slideWidth(): number {
-    return window.innerWidth - 44;
+  // ── Drag state ──────────────────────────────────────────
+  let isDragging   = false;
+  let isHorizontal = false;
+  let touchX0 = 0, touchY0 = 0, touchT0 = 0;
+  let dragDx  = 0;
+
+  function slideW(): number {
+    return outer?.clientWidth ?? window.innerWidth;
   }
 
-  function scrollToPage(page: number, smooth = true) {
-    if (!track) return;
-    const target = (page - 1) * (slideWidth() + GAP);
-    if (Math.abs(track.scrollLeft - target) < 8) return;
-    sliding = true;
-    track.scrollTo({ left: target, behavior: smooth ? 'smooth' : 'instant' });
-    setTimeout(() => { sliding = false; }, 650);
+  function animateTo(idx: number, animate: boolean) {
+    if (!slider) return;
+    slider.style.transition = animate ? 'transform 200ms ease-out' : 'none';
+    slider.style.transform  = `translateX(${-idx * slideW()}px)`;
   }
 
-  function onScroll() {
-    if (sliding || !track) return;
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(() => {
-      const idx = Math.round(track.scrollLeft / (slideWidth() + GAP));
-      const page = Math.min(Math.max(idx + 1, 1), 5);
-      if (page !== $activePage) {
-        sliding = true;
-        activePage.set(page);
-        setTimeout(() => { sliding = false; }, 100);
-      }
-    }, 120);
+  function navigateTo(idx: number) {
+    animLock = true;
+    animateTo(idx, true);
+    const page = idx + 1;
+    if (page !== $activePage) activePage.set(page);
+    setTimeout(() => { animLock = false; }, 250);
   }
 
-  // ── Velocity-based swipe detection ───────────────────────
-  // CSS scroll-snap usa ~50% come soglia nativa; aggiungiamo
-  // velocity check (> 280 px/s) per completare anche swipe brevi e veloci.
-  let touchX0 = 0;
-  let touchT0 = 0;
+  // Sync da click sulle tab / navigazione esterna
+  $: if (!animLock && mounted && slider && $activePage >= 1 && $activePage <= 5) {
+    animateTo($activePage - 1, true);
+  }
 
+  // ── Touch handlers ──────────────────────────────────────
   function onTouchStart(e: TouchEvent) {
     touchX0 = e.touches[0].clientX;
+    touchY0 = e.touches[0].clientY;
     touchT0 = Date.now();
+    dragDx  = 0;
+    isDragging   = true;
+    isHorizontal = false;
+    if (slider) slider.style.transition = 'none';
   }
 
-  function onTouchEnd(e: TouchEvent) {
-    if (!track) return;
-    const dx       = e.changedTouches[0].clientX - touchX0;
+  function onTouchMove(e: TouchEvent) {
+    if (!isDragging || !slider) return;
+    const dx = e.touches[0].clientX - touchX0;
+    const dy = e.touches[0].clientY - touchY0;
+
+    // Rileva asse al primo movimento significativo
+    if (!isHorizontal) {
+      if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        isHorizontal = true;
+      } else {
+        isDragging = false; // gesto verticale — non interferire
+        return;
+      }
+    }
+
+    dragDx = dx;
+    const idx = $activePage - 1;
+    let effectiveDx = dx;
+
+    // Resistenza ai bordi — dampen ma non bloccare
+    if ((idx === 0 && dx > 0) || (idx === LAST_IDX && dx < 0)) {
+      effectiveDx = dx * 0.30;
+    }
+
+    slider.style.transform = `translateX(${-idx * slideW() + effectiveDx}px)`;
+  }
+
+  function onTouchEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    if (!isHorizontal) return; // gesto verticale — nessuna navigazione
+
     const elapsed  = Math.max(1, Date.now() - touchT0);
-    const velocity = Math.abs(dx) / elapsed * 1000; // px/s
-    const slideW   = slideWidth();
+    const velocity = Math.abs(dragDx) / elapsed;         // px/ms
+    const dist     = Math.abs(dragDx) / slideW();
+    const dir      = dragDx < 0 ? 1 : -1;
+    const idx      = $activePage - 1;
 
-    const intentional = velocity > 280 || Math.abs(dx) > slideW * 0.28;
-    if (!intentional) return; // gesto troppo corto/lento: lascia fare allo snap nativo
+    const intentional = dist >= DIST_THRESHOLD || velocity >= VEL_THRESHOLD;
 
-    // direzione: dx < 0 = swipe sinistra = avanza (idx+1)
-    //            dx > 0 = swipe destra  = torna  (idx-1)
-    const dir        = dx < 0 ? 1 : -1;
-    const currentIdx = Math.round(track.scrollLeft / (slideW + GAP));
+    if (intentional) {
+      // Bordi: naviga fuori dal carousel
+      if (dir === -1 && idx === 0)        { activePage.set(6); return; } // → Oggi
+      if (dir === 1  && idx === LAST_IDX) { activePage.set(0); return; } // → Base
 
-    // Bordo sinistro: swipe destra da Colazione → Oggi
-    if (dir === -1 && currentIdx === 0) {
-      activePage.set(6);
-      return;
+      navigateTo(Math.max(0, Math.min(LAST_IDX, idx + dir)));
+    } else {
+      // Rimbalzo seco, nessuna animazione elastica
+      animateTo(idx, true);
     }
-    // Bordo destro: swipe sinistra da Cena → Base
-    if (dir === 1 && currentIdx === LAST_IDX) {
-      activePage.set(0);
-      return;
-    }
-
-    // Navigazione interna al carousel
-    const targetIdx  = Math.max(0, Math.min(LAST_IDX, currentIdx + dir));
-    const targetPage = targetIdx + 1;
-    if (targetPage !== $activePage) {
-      // Impostiamo activePage e lasciamo che la $: reactive chiami scrollToPage
-      activePage.set(targetPage);
-    }
-  }
-
-  // Sync tab-click → carousel position
-  $: if (!sliding && mounted && track && $activePage >= 1 && $activePage <= 5) {
-    scrollToPage($activePage);
   }
 
   onMount(() => {
     mounted = true;
-    scrollToPage($activePage, false);
+    animateTo($activePage - 1, false);
 
-    // First-use swipe hint: scroll leggermente a destra poi torna
+    // Ricalcola posizione al resize (rotazione dispositivo)
+    const onResize = () => {
+      if ($activePage >= 1 && $activePage <= 5) animateTo($activePage - 1, false);
+    };
+    window.addEventListener('resize', onResize);
+
+    // First-use hint
     if (!localStorage.getItem('mp_swipe_hint')) {
       setTimeout(() => {
-        track?.scrollTo({ left: 90, behavior: 'smooth' });
+        if (!slider) return;
+        const idx = $activePage - 1;
+        slider.style.transition = 'transform 300ms ease-out';
+        slider.style.transform  = `translateX(${-idx * slideW() - 90}px)`;
         setTimeout(() => {
-          track?.scrollTo({ left: 0, behavior: 'smooth' });
+          slider.style.transform = `translateX(${-idx * slideW()}px)`;
           localStorage.setItem('mp_swipe_hint', '1');
         }, 480);
       }, 900);
     }
+
+    return () => window.removeEventListener('resize', onResize);
   });
 </script>
 
 <div class="carousel-wrap">
   <div
-    class="swipe-track"
-    bind:this={track}
-    on:scroll={onScroll}
+    class="carousel-outer"
+    bind:this={outer}
     on:touchstart|passive={onTouchStart}
+    on:touchmove|passive={onTouchMove}
     on:touchend|passive={onTouchEnd}
   >
-    {#each MEALS as meal}
-      <div class="swipe-slide">
-        <MealPanel {meal} />
-      </div>
-    {/each}
+    <div class="carousel-slider" bind:this={slider}>
+      {#each MEALS as meal}
+        <div class="carousel-slide">
+          <div class="slide-inner">
+            <MealPanel {meal} />
+          </div>
+        </div>
+      {/each}
+    </div>
   </div>
 
   <div class="dots" role="tablist" aria-label="Pasto attivo">
@@ -126,7 +158,7 @@
       <button
         class="dot"
         class:active={$activePage === i + 1}
-        on:click={() => activePage.set(i + 1)}
+        on:click={() => navigateTo(i)}
         aria-label={meal.label}
         role="tab"
         aria-selected={$activePage === i + 1}
@@ -140,26 +172,31 @@
     padding-bottom: 86px;
   }
 
-  .swipe-track {
+  .carousel-outer {
+    overflow: hidden;
+    width: 100%;
+    /* Il browser gestisce lo scroll verticale nativo;
+       noi gestiamo il pan orizzontale via JS */
+    touch-action: pan-y;
+  }
+
+  .carousel-slider {
     display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-padding-left: 16px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding: 14px 16px 0;
-    gap: 10px;
-    overscroll-behavior-x: contain;
-  }
-  .swipe-track::-webkit-scrollbar { display: none; }
-
-  .swipe-slide {
-    flex: 0 0 calc(100vw - 44px);
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    padding: 0 2px 8px;
+    will-change: transform;
+    /* transition gestito via JS in animateTo() */
   }
 
+  .carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .slide-inner {
+    padding: 14px 16px 8px;
+  }
+
+  /* ── Dots ── */
   .dots {
     display: flex;
     justify-content: center;
