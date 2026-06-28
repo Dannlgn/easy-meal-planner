@@ -258,7 +258,7 @@
     min-width: 0;
     height: 100%;
     overflow-y: auto;
-    overscroll-behavior: contain;
+    overscroll-behavior: none;
   }
 
   /* 86px bottom = spazio per StickyTotals fisso */

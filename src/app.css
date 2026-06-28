@@ -44,6 +44,8 @@
 
 html {
   height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 body {
@@ -52,6 +54,7 @@ body {
   color: var(--text);
   height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
 }
 
