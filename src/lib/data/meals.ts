@@ -26,8 +26,14 @@ export const MEALS: Meal[] = [
           { name: 'Cioccolato fondente 70%',       qty: 20 },
           { name: 'Cioccolato fondente 80%',       qty: 20 },
           { name: 'Cioccolato fondente 90%',       qty: 20 },
-          { name: 'Frutta secca e oleosa (media)', qty: 20 },
           { name: 'Nocciolata – Rigoni di Asiago', qty: 20 },
+        ],
+      },
+      {
+        id: 'col_fn', label: 'Frutta Secca',
+        items: [
+          { name: 'Mandorle', qty: 30, main: true },
+          { name: 'Noci',     qty: 25 },
         ],
       },
       {
@@ -97,7 +103,6 @@ export const MEALS: Meal[] = [
       {
         id: 'spu_prot', label: 'Proteico',
         items: [
-          { name: 'Affettato – Fesa di Tacchino', qty: 130 },
           { name: 'Fiocchi di Latte',             qty: 200 },
           { name: 'Skyr bianco',                  qty: 250 },
           { name: 'Uova di gallina – albume',     qty: 250 },
@@ -110,6 +115,7 @@ export const MEALS: Meal[] = [
         id: 'spu_aff', label: 'Affettati',
         items: [
           { name: 'Bresaola della Valtellina IGP',  qty: 80, main: true },
+          { name: 'Affettato – Fesa di Tacchino',   qty: 130 },
           { name: 'Coppa',                          qty: 60 },
           { name: 'Mortadella Bologna IGP',         qty: 60 },
           { name: 'Pancetta tesa',                  qty: 50 },
@@ -171,7 +177,6 @@ export const MEALS: Meal[] = [
       {
         id: 'spu2_prot', label: 'Proteico',
         items: [
-          { name: 'Affettato – Fesa di Tacchino', qty: 130 },
           { name: 'Fiocchi di Latte',             qty: 200 },
           { name: 'Skyr bianco',                  qty: 250 },
           { name: 'Uova di gallina – albume',     qty: 250 },
@@ -184,6 +189,7 @@ export const MEALS: Meal[] = [
         id: 'spu2_aff', label: 'Affettati',
         items: [
           { name: 'Bresaola della Valtellina IGP',  qty: 80, main: true },
+          { name: 'Affettato – Fesa di Tacchino',   qty: 130 },
           { name: 'Coppa',                          qty: 60 },
           { name: 'Mortadella Bologna IGP',         qty: 60 },
           { name: 'Pancetta tesa',                  qty: 50 },
