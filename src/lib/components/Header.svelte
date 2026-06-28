@@ -1,6 +1,9 @@
 <script lang="ts">
   import { onMount, afterUpdate } from 'svelte';
   import { activePage, resetMeal, quantities, mainItems, savedBase, calcMealTotals } from '../stores/state';
+
+  // Traccia l'ultimo activePage per cui abbiamo già scrollato
+  let _lastScrolledPage = -1;
   import { MEALS } from '../data/meals';
   import HowTo from './HowTo.svelte';
 
@@ -49,11 +52,19 @@
 
   function scrollActiveIntoView() {
     const active = tabsEl?.querySelector('.tab.active') as HTMLElement | null;
-    active?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    // instant: evita che uno smooth-scroll si sovrapponga al flick della tab bar
+    active?.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'nearest' });
   }
 
   onMount(() => { updateFades(); });
-  afterUpdate(() => { scrollActiveIntoView(); updateFades(); });
+  afterUpdate(() => {
+    // Scrolla verso la tab attiva SOLO quando cambia la pagina, non ad ogni update
+    if ($activePage !== _lastScrolledPage) {
+      _lastScrolledPage = $activePage;
+      scrollActiveIntoView();
+    }
+    updateFades();
+  });
 </script>
 
 <header>
