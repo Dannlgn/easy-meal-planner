@@ -168,7 +168,7 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
     gap: 2px;
-    touch-action: none; /* lascia tutto al JS — lo swipe naviga i pannelli */
+    overscroll-behavior: none; /* blocca il bounce agli estremi della tab bar */
   }
   .tabs::-webkit-scrollbar { display: none; }
 

@@ -59,6 +59,8 @@
 
   // ── Touch handlers su document — coprono header + body ───
   function onTouchStart(e: TouchEvent) {
+    // Lascia che l'header gestisca i propri touch (scroll tab bar)
+    if ((e.target as Element)?.closest('header')) return;
     // Non intercettare gesti su input/select per non disturbare l'editing
     const tag = (e.target as Element)?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
