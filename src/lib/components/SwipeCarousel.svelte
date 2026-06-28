@@ -4,20 +4,20 @@
   import { activePage } from '../stores/state';
   import { MEALS } from '../data/meals';
 
-  const LAST_IDX       = MEALS.length - 1; // 4
+  const LAST_IDX       = MEALS.length - 1;
   const DIST_THRESHOLD = 0.05;   // 5% larghezza schermo
-  const VEL_THRESHOLD  = 0.10;   // px/ms  (= 100 px/s)
+  const VEL_THRESHOLD  = 0.10;   // px/ms
 
-  let outer:  HTMLElement;  // wrapper overflow:hidden
-  let slider: HTMLElement;  // flex container traslato
+  let outer:  HTMLElement;
+  let slider: HTMLElement;
   let mounted = false;
-  let animLock = false;     // blocca il reactive durante navigateTo
+  let animLock = false;
 
   // ── Drag state ──────────────────────────────────────────
   let isDragging   = false;
   let isHorizontal = false;
   let touchX0 = 0, touchY0 = 0, touchT0 = 0;
-  let dragDx  = 0;
+  let dragDx = 0;
 
   function slideW(): number {
     return outer?.clientWidth ?? window.innerWidth;
@@ -37,7 +37,7 @@
     setTimeout(() => { animLock = false; }, 250);
   }
 
-  // Sync da click sulle tab / navigazione esterna
+  // Sync da click header tab / navigazione esterna
   $: if (!animLock && mounted && slider && $activePage >= 1 && $activePage <= 5) {
     animateTo($activePage - 1, true);
   }
@@ -58,75 +58,88 @@
     const dx = e.touches[0].clientX - touchX0;
     const dy = e.touches[0].clientY - touchY0;
 
-    // Rileva asse: se già determinato orizzontale → applica follow-finger
-    // Se verticale → non interferire MA mantieni isDragging=true
-    // (la decisione finale avviene in onTouchEnd con le coordinate raw)
+    // Rilevamento asse al primo movimento significativo
     if (!isHorizontal) {
       if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
       if (Math.abs(dx) >= Math.abs(dy)) {
         isHorizontal = true;
       } else {
-        return; // sembra verticale, ma aspettiamo touchend per decidere
+        isDragging = false; // gesto verticale confermato
+        return;
       }
     }
 
+    // Orizzontale confermato: blocca lo scroll del browser
+    e.preventDefault();
+
     dragDx = dx;
     const idx = $activePage - 1;
-    let effectiveDx = dx;
+    const w   = slideW();
 
-    // Resistenza ai bordi
+    // Controlla soglia durante il move → naviga subito senza aspettare touchend
+    const elapsed = Math.max(1, Date.now() - touchT0);
+    const dist    = Math.abs(dx) / w;
+    const vel     = Math.abs(dx) / elapsed;
+
+    if (dist >= DIST_THRESHOLD || vel >= VEL_THRESHOLD) {
+      isDragging = false;
+      const dir = dx < 0 ? 1 : -1;
+      if (dir === -1 && idx === 0)        { activePage.set(6); return; }
+      if (dir === 1  && idx === LAST_IDX) { activePage.set(0); return; }
+      navigateTo(Math.max(0, Math.min(LAST_IDX, idx + dir)));
+      return;
+    }
+
+    // Follow-finger (resistenza ai bordi)
+    let effectiveDx = dx;
     if ((idx === 0 && dx > 0) || (idx === LAST_IDX && dx < 0)) {
       effectiveDx = dx * 0.30;
     }
-
-    slider.style.transform = `translateX(${-idx * slideW() + effectiveDx}px)`;
+    slider.style.transform = `translateX(${-idx * w + effectiveDx}px)`;
   }
 
+  // Fallback per swipe veloci dove touchmove non ha sparato abbastanza eventi
   function onTouchEnd(e: TouchEvent) {
     if (!isDragging) return;
     isDragging = false;
 
-    // Usa sempre le coordinate raw start→end per distanza e direzione:
-    // questo copre i gesti veloci dove touchmove non viene emesso
-    // prima di touchend (comportamento comune su iOS Safari).
     const totalDx = e.changedTouches[0].clientX - touchX0;
     const totalDy = e.changedTouches[0].clientY - touchY0;
 
-    // Asse orizzontale: |dx| > |dy| con spostamento minimo di 8px
     const horizontal = Math.abs(totalDx) > Math.abs(totalDy) && Math.abs(totalDx) >= 4;
     if (!horizontal) {
-      if (dragDx !== 0) animateTo($activePage - 1, true); // ripristina se era spostato
+      if (dragDx !== 0) animateTo($activePage - 1, true);
       return;
     }
 
     const elapsed  = Math.max(1, Date.now() - touchT0);
-    const velocity = Math.abs(totalDx) / elapsed;          // px/ms
+    const velocity = Math.abs(totalDx) / elapsed;
     const dist     = Math.abs(totalDx) / slideW();
     const dir      = totalDx < 0 ? 1 : -1;
     const idx      = $activePage - 1;
 
-    const intentional = dist >= DIST_THRESHOLD || velocity >= VEL_THRESHOLD;
-
-    if (intentional) {
-      if (dir === -1 && idx === 0)        { activePage.set(6); return; } // → Oggi
-      if (dir === 1  && idx === LAST_IDX) { activePage.set(0); return; } // → Base
+    if (dist >= DIST_THRESHOLD || velocity >= VEL_THRESHOLD) {
+      if (dir === -1 && idx === 0)        { activePage.set(6); return; }
+      if (dir === 1  && idx === LAST_IDX) { activePage.set(0); return; }
       navigateTo(Math.max(0, Math.min(LAST_IDX, idx + dir)));
     } else {
-      animateTo(idx, true); // snap-back seco
+      animateTo(idx, true);
     }
   }
 
   onMount(() => {
     mounted = true;
-    animateTo($activePage - 1, false);
+    // requestAnimationFrame garantisce che il layout sia calcolato
+    // prima di leggere clientWidth per il posizionamento iniziale
+    requestAnimationFrame(() => {
+      animateTo($activePage - 1, false);
+    });
 
-    // Ricalcola posizione al resize (rotazione dispositivo)
     const onResize = () => {
       if ($activePage >= 1 && $activePage <= 5) animateTo($activePage - 1, false);
     };
     window.addEventListener('resize', onResize);
 
-    // First-use hint
     if (!localStorage.getItem('mp_swipe_hint')) {
       setTimeout(() => {
         if (!slider) return;
@@ -149,7 +162,7 @@
     class="carousel-outer"
     bind:this={outer}
     on:touchstart|passive={onTouchStart}
-    on:touchmove|passive={onTouchMove}
+    on:touchmove|nonpassive={onTouchMove}
     on:touchend|passive={onTouchEnd}
   >
     <div class="carousel-slider" bind:this={slider}>
@@ -185,15 +198,12 @@
   .carousel-outer {
     overflow: hidden;
     width: 100%;
-    /* Il browser gestisce lo scroll verticale nativo;
-       noi gestiamo il pan orizzontale via JS */
-    touch-action: pan-y;
+    /* Nessun touch-action: gestiamo tutto via JS con preventDefault */
   }
 
   .carousel-slider {
     display: flex;
     will-change: transform;
-    /* transition gestito via JS in animateTo() */
   }
 
   .carousel-slide {
@@ -206,7 +216,6 @@
     padding: 14px 16px 8px;
   }
 
-  /* ── Dots ── */
   .dots {
     display: flex;
     justify-content: center;
