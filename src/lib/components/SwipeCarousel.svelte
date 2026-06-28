@@ -58,14 +58,15 @@
     const dx = e.touches[0].clientX - touchX0;
     const dy = e.touches[0].clientY - touchY0;
 
-    // Rileva asse al primo movimento significativo
+    // Rileva asse: se già determinato orizzontale → applica follow-finger
+    // Se verticale → non interferire MA mantieni isDragging=true
+    // (la decisione finale avviene in onTouchEnd con le coordinate raw)
     if (!isHorizontal) {
       if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
       if (Math.abs(dx) >= Math.abs(dy)) {
         isHorizontal = true;
       } else {
-        isDragging = false; // gesto verticale — non interferire
-        return;
+        return; // sembra verticale, ma aspettiamo touchend per decidere
       }
     }
 
@@ -73,7 +74,7 @@
     const idx = $activePage - 1;
     let effectiveDx = dx;
 
-    // Resistenza ai bordi — dampen ma non bloccare
+    // Resistenza ai bordi
     if ((idx === 0 && dx > 0) || (idx === LAST_IDX && dx < 0)) {
       effectiveDx = dx * 0.30;
     }
@@ -81,28 +82,37 @@
     slider.style.transform = `translateX(${-idx * slideW() + effectiveDx}px)`;
   }
 
-  function onTouchEnd() {
+  function onTouchEnd(e: TouchEvent) {
     if (!isDragging) return;
     isDragging = false;
-    if (!isHorizontal) return; // gesto verticale — nessuna navigazione
+
+    // Usa sempre le coordinate raw start→end per distanza e direzione:
+    // questo copre i gesti veloci dove touchmove non viene emesso
+    // prima di touchend (comportamento comune su iOS Safari).
+    const totalDx = e.changedTouches[0].clientX - touchX0;
+    const totalDy = e.changedTouches[0].clientY - touchY0;
+
+    // Asse orizzontale: |dx| > |dy| con spostamento minimo di 8px
+    const horizontal = Math.abs(totalDx) > Math.abs(totalDy) && Math.abs(totalDx) >= 8;
+    if (!horizontal) {
+      if (dragDx !== 0) animateTo($activePage - 1, true); // ripristina se era spostato
+      return;
+    }
 
     const elapsed  = Math.max(1, Date.now() - touchT0);
-    const velocity = Math.abs(dragDx) / elapsed;         // px/ms
-    const dist     = Math.abs(dragDx) / slideW();
-    const dir      = dragDx < 0 ? 1 : -1;
+    const velocity = Math.abs(totalDx) / elapsed;          // px/ms
+    const dist     = Math.abs(totalDx) / slideW();
+    const dir      = totalDx < 0 ? 1 : -1;
     const idx      = $activePage - 1;
 
     const intentional = dist >= DIST_THRESHOLD || velocity >= VEL_THRESHOLD;
 
     if (intentional) {
-      // Bordi: naviga fuori dal carousel
       if (dir === -1 && idx === 0)        { activePage.set(6); return; } // → Oggi
       if (dir === 1  && idx === LAST_IDX) { activePage.set(0); return; } // → Base
-
       navigateTo(Math.max(0, Math.min(LAST_IDX, idx + dir)));
     } else {
-      // Rimbalzo seco, nessuna animazione elastica
-      animateTo(idx, true);
+      animateTo(idx, true); // snap-back seco
     }
   }
 

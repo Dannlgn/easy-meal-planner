@@ -56,6 +56,10 @@ main {
   margin: 0 auto;
 }
 
+.no-overscroll {
+  overscroll-behavior: contain;
+}
+
 .footer-note {
   text-align: center;
   font-size: 11px;
