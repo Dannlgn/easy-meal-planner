@@ -117,9 +117,9 @@ function calcSmartQty(target: SmartTarget, substituteName: string): number {
   if (!den || !Number.isFinite(den)) return 50;
   const num = wKcal * sK * target.kcal + wC * sC * target.c + wP * sP * target.p + wF * sF * target.f;
   let x = num / den;
-  if (!Number.isFinite(x) || x <= 0) return 5;
+  if (!Number.isFinite(x) || x <= 0) return 10;
   x = Math.round(x / 5) * 5;
-  return Math.max(5, Math.min(x, 500));
+  return Math.max(10, x);
 }
 
 export function recalcGroupFromMain(groupId: string) {
