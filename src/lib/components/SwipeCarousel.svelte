@@ -150,6 +150,12 @@
     const onResize = () => animateTo(pageToIdx($activePage), false);
     window.addEventListener('resize', onResize);
 
+    // Listener su document con { passive: false } esplicito — così
+    // e.preventDefault() funziona anche su elementi overflow:auto (tab bar)
+    document.addEventListener('touchstart', onTouchStart, { passive: true });
+    document.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    document.addEventListener('touchend',   onTouchEnd,   { passive: true });
+
     // Nudge hint alla prima apertura su un pasto
     if (!localStorage.getItem('mp_swipe_hint') && $activePage >= 1 && $activePage <= 5) {
       setTimeout(() => {
@@ -164,15 +170,14 @@
       }, 900);
     }
 
-    return () => window.removeEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      document.removeEventListener('touchstart', onTouchStart);
+      document.removeEventListener('touchmove',  onTouchMove);
+      document.removeEventListener('touchend',   onTouchEnd);
+    };
   });
 </script>
-
-<svelte:document
-  on:touchstart|passive={onTouchStart}
-  on:touchmove|nonpassive={onTouchMove}
-  on:touchend|passive={onTouchEnd}
-/>
 
 <div class="carousel-wrap">
   <div class="carousel-outer" bind:this={outer}>
