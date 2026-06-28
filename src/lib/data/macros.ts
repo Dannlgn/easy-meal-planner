@@ -113,6 +113,52 @@ export const MACRO_DB: Record<string, MacroData> = {
   'Anguria':                          { c:  5.2, p:  0.5, f:  0.3 }, // CREA 230050
   'Susine':                           { c:  9.6, p:  0.7, f:  0.1 }, // CREA 230620
   'Albicocche':                       { c:  6.8, p:  0.6, f:  0.1 }, // CREA 230010
+  // ── FUORI CASA — valori medi per 100g (fonte: CREA + etichette produttore) ──
+  // Colazione
+  'Cappuccino':                         { c:  4.5, p:  2.5, f:  1.5 },
+  'Croissant vuoto':                    { c: 45.0, p:  7.0, f: 22.0 },
+  'Croissant alla Nutella':             { c: 52.0, p:  7.0, f: 22.0 },
+  'Croissant alla crema':               { c: 48.0, p:  7.0, f: 18.0 },
+  'Croissant al pistacchio':            { c: 44.0, p:  8.0, f: 24.0 },
+  'Cornetto integrale':                 { c: 47.0, p:  8.0, f: 17.0 },
+  'Brioche con tuppo':                  { c: 52.0, p:  7.0, f: 13.0 },
+  'Succo di frutta brick':              { c: 11.0, p:  0.3, f:  0.1 },
+  'Yogurt confezionato bar':            { c: 13.0, p:  4.0, f:  3.5 },
+  // Spuntino
+  'Gelato cono classico':               { c: 26.0, p:  3.5, f: 10.0 },
+  'Magnum Classic':                     { c: 27.0, p:  3.5, f: 16.0 }, // Algida ufficiale
+  'Magnum Almond':                      { c: 28.0, p:  4.0, f: 20.0 }, // Algida ufficiale
+  'Ghiacciolo alla frutta':             { c: 15.0, p:  0.2, f:  0.1 },
+  'Cornetto Algida Classic':            { c: 30.0, p:  3.5, f: 13.0 }, // Algida ufficiale
+  'Yogurt gelato':                      { c: 22.0, p:  4.0, f:  2.0 },
+  'Granita con brioche':                { c: 38.0, p:  4.0, f:  2.5 },
+  'Frappuccino caffè freddo':           { c: 17.0, p:  2.0, f:  1.5 },
+  'Bombolone alla crema':               { c: 42.0, p:  6.0, f: 14.0 },
+  'Muffin cioccolato':                  { c: 52.0, p:  5.5, f: 17.0 },
+  // Pranzo / Cena
+  'Pizza margherita – fetta':           { c: 33.0, p: 10.0, f:  9.0 },
+  'Pizza margherita – intera':          { c: 33.0, p: 10.0, f:  9.0 },
+  'Pizza diavola – intera':             { c: 32.0, p: 11.0, f: 11.0 },
+  'Pizza 4 formaggi – intera':          { c: 30.0, p: 13.0, f: 14.0 },
+  'Panino hamburger classico':          { c: 28.0, p: 14.0, f: 10.0 },
+  'Panino hamburger con cheddar':       { c: 27.0, p: 15.0, f: 13.0 },
+  'Patatine fritte':                    { c: 41.0, p:  3.5, f: 15.0 },
+  'Piadina prosciutto e stracchino':    { c: 30.0, p: 13.0, f: 10.0 },
+  'Tramezzino':                         { c: 28.0, p:  9.0, f:  9.0 },
+  'Kebab nel pane':                     { c: 24.0, p: 14.0, f:  7.5 },
+  'Sushi misto (8 pz)':                 { c: 28.0, p:  8.0, f:  3.0 },
+  'Sushi misto (12 pz)':                { c: 28.0, p:  8.0, f:  3.0 },
+  'Pasta al pomodoro – ristorante':     { c: 22.0, p:  4.5, f:  3.0 },
+  'Insalatona con pollo':               { c:  5.0, p: 12.0, f:  4.0 },
+  'Wrap pollo e verdure':               { c: 25.0, p: 14.0, f:  7.0 },
+  'Burger completo con patatine':       { c: 30.0, p: 12.0, f: 12.0 },
+  'Tagliata di manzo con rucola':       { c:  1.0, p: 26.0, f:  7.5 },
+  'Pasta alla carbonara – ristorante':  { c: 34.0, p: 12.0, f: 11.0 },
+  "Pasta all'amatriciana – ristorante": { c: 35.0, p:  9.0, f:  8.0 },
+  'Risotto ai funghi – ristorante':     { c: 25.0, p:  4.5, f:  4.5 },
+  'Bistecca ai ferri':                  { c:  0.0, p: 28.0, f:  7.0 },
+  'Frittura di pesce':                  { c: 12.0, p: 16.0, f: 12.0 },
+  'Tiramisù':                           { c: 26.0, p:  5.0, f: 17.0 },
   // ── VERDURA / GRASSI ──
   'Verdura':                          { c:  4.7, p:  1.9, f:  0.3 },
   'Insalata':                         { c:  2.2, p:  1.3, f:  0.2 },

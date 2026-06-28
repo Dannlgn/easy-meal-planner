@@ -10,6 +10,7 @@ export interface FoodGroup {
   id: string;
   label: string;
   items: FoodItem[];
+  note?: string; // riga informativa mostrata sotto il titolo (es. disclaimer "Fuori Casa")
 }
 
 export interface MealSection {

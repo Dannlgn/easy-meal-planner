@@ -34,6 +34,7 @@
   <div class="group-header" class:all-zero={allZero} on:click={() => expanded = !expanded}>
     <div class="header-left">
       <span class="group-title">{group.label}</span>
+      {#if group.note}<span class="group-note">{group.note}</span>{/if}
       {#if !expanded}
         {#if mainQty === 0}
           <span class="inactive-hint">— non incluso</span>
@@ -117,6 +118,15 @@
     text-transform: uppercase;
     letter-spacing: .8px;
     opacity: .65;
+  }
+
+  .group-note {
+    font-size: 10px;
+    font-weight: 400;
+    opacity: .55;
+    letter-spacing: 0;
+    text-transform: none;
+    font-style: italic;
   }
 
   .main-preview {

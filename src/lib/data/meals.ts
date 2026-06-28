@@ -62,6 +62,21 @@ export const MEALS: Meal[] = [
         ],
       },
       {
+        id: 'col_fc', label: 'Fuori Casa',
+        note: 'ℹ Valori approssimativi — variano per locale e preparazione',
+        items: [
+          { name: 'Cappuccino',              qty: 150, main: true },
+          { name: 'Croissant vuoto',         qty:  60 },
+          { name: 'Croissant alla Nutella',  qty:  75 },
+          { name: 'Croissant alla crema',    qty:  80 },
+          { name: 'Croissant al pistacchio', qty:  80 },
+          { name: 'Cornetto integrale',      qty:  65 },
+          { name: 'Brioche con tuppo',       qty:  80 },
+          { name: 'Succo di frutta brick',   qty: 200 },
+          { name: 'Yogurt confezionato bar', qty: 125 },
+        ],
+      },
+      {
         id: 'col_fru', label: 'Frutta',
         items: [
           { name: 'Albicocche',  qty: 150 },
@@ -123,6 +138,22 @@ export const MEALS: Meal[] = [
           { name: 'Prosciutto crudo DOP di Parma',  qty: 60 },
           { name: 'Salame Milano',                  qty: 50 },
           { name: "Speck dell'Alto Adige IGP",      qty: 60 },
+        ],
+      },
+      {
+        id: 'spu_fc', label: 'Fuori Casa',
+        note: 'ℹ Valori approssimativi — variano per locale e preparazione',
+        items: [
+          { name: 'Gelato cono classico',     qty: 120, main: true },
+          { name: 'Magnum Classic',           qty:  86 },
+          { name: 'Magnum Almond',            qty:  90 },
+          { name: 'Ghiacciolo alla frutta',   qty:  75 },
+          { name: 'Cornetto Algida Classic',  qty:  75 },
+          { name: 'Yogurt gelato',            qty: 150 },
+          { name: 'Granita con brioche',      qty: 250 },
+          { name: 'Frappuccino caffè freddo', qty: 250 },
+          { name: 'Bombolone alla crema',     qty:  80 },
+          { name: 'Muffin cioccolato',        qty: 100 },
         ],
       },
       {
@@ -239,6 +270,7 @@ export const MEALS: Meal[] = [
       { id: 'pra_sec_prot', label: 'Proteico',    groupIds: ['pra_prot_car', 'pra_prot_pes', 'pra_prot_uov', 'pra_prot_lat', 'pra_prot_veg'] },
       { id: 'pra_sec_verd', label: 'Verdura',     groupIds: ['pra_verd'] },
       { id: 'pra_sec_gr',   label: 'Grassi',      groupIds: ['pra_gr'] },
+      { id: 'pra_sec_fc',   label: 'Fuori Casa',  groupIds: ['pra_fc'] },
     ],
     groups: [
       {
@@ -340,6 +372,24 @@ export const MEALS: Meal[] = [
           { name: 'Pesto',             qty: 20 },
         ],
       },
+      {
+        id: 'pra_fc', label: 'Fuori Casa',
+        note: 'ℹ Valori approssimativi — variano per locale e preparazione',
+        items: [
+          { name: 'Pizza margherita – fetta',        qty: 150, main: true },
+          { name: 'Pizza margherita – intera',       qty: 450 },
+          { name: 'Panino hamburger classico',       qty: 200 },
+          { name: 'Panino hamburger con cheddar',    qty: 220 },
+          { name: 'Patatine fritte',                 qty: 150 },
+          { name: 'Piadina prosciutto e stracchino', qty: 180 },
+          { name: 'Tramezzino',                      qty: 100 },
+          { name: 'Kebab nel pane',                  qty: 300 },
+          { name: 'Sushi misto (8 pz)',              qty: 200 },
+          { name: 'Pasta al pomodoro – ristorante',  qty: 350 },
+          { name: 'Insalatona con pollo',            qty: 300 },
+          { name: 'Wrap pollo e verdure',            qty: 220 },
+        ],
+      },
     ],
   },
 
@@ -350,6 +400,7 @@ export const MEALS: Meal[] = [
       { id: 'cen_sec_prot', label: 'Proteico',    groupIds: ['cen_prot_car', 'cen_prot_pes', 'cen_prot_uov', 'cen_prot_lat', 'cen_prot_veg'] },
       { id: 'cen_sec_verd', label: 'Verdura',     groupIds: ['cen_verd'] },
       { id: 'cen_sec_gr',   label: 'Grassi',      groupIds: ['cen_gr'] },
+      { id: 'cen_sec_fc',   label: 'Fuori Casa',  groupIds: ['cen_fc'] },
     ],
     groups: [
       {
@@ -449,6 +500,24 @@ export const MEALS: Meal[] = [
           { name: 'Avocado',           qty: 40 },
           { name: 'Olio di oliva EVO', qty: 10, main: true },
           { name: 'Pesto',             qty: 20 },
+        ],
+      },
+      {
+        id: 'cen_fc', label: 'Fuori Casa',
+        note: 'ℹ Valori approssimativi — variano per locale e preparazione',
+        items: [
+          { name: 'Pizza margherita – intera',          qty: 450, main: true },
+          { name: 'Pizza diavola – intera',             qty: 460 },
+          { name: 'Pizza 4 formaggi – intera',          qty: 470 },
+          { name: 'Burger completo con patatine',       qty: 400 },
+          { name: 'Sushi misto (12 pz)',                qty: 300 },
+          { name: 'Tagliata di manzo con rucola',       qty: 300 },
+          { name: 'Pasta alla carbonara – ristorante',  qty: 380 },
+          { name: "Pasta all'amatriciana – ristorante", qty: 370 },
+          { name: 'Risotto ai funghi – ristorante',     qty: 350 },
+          { name: 'Bistecca ai ferri',                  qty: 200 },
+          { name: 'Frittura di pesce',                  qty: 200 },
+          { name: 'Tiramisù',                           qty: 150 },
         ],
       },
     ],
