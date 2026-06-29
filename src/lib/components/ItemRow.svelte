@@ -245,7 +245,8 @@
     font-size: 13px;
     font-weight: 500;
     color: var(--muted);
-    width: 22px;
+    min-width: 20px;
+    white-space: nowrap;
     text-align: left;
   }
 
