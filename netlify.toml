@@ -4,3 +4,20 @@
 
 [build.environment]
   VITE_BASE_PATH = "/"
+
+# index.html non deve mai essere cachato — gli asset JS/CSS hanno hash nel nome
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Asset con hash nel nome → cache lunga (immutable)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
