@@ -1,18 +1,16 @@
 export interface FoodItem {
   name: string;
-  qty: number;           // grammi; per gruppi portions: grammi per porzione (fisso)
+  qty: number;
   main?: boolean;
-  unitSize?: number;     // grammi per unità (es. 55 per un uovo medio)
-  unitLabel?: string;    // etichetta unità (es. 'uova')
-  portionUnit?: string;  // etichetta porzione Fuori Casa (es. 'pizza', 'croissant')
+  unitSize?: number;  // grammi per unità (es. 55 per un uovo medio)
+  unitLabel?: string; // etichetta unità (es. 'uova')
 }
 
 export interface FoodGroup {
   id: string;
   label: string;
   items: FoodItem[];
-  note?: string;
-  portions?: true;       // se presente: input a porzioni intere, multi-select (Fuori Casa)
+  note?: string; // riga informativa mostrata sotto il titolo (es. disclaimer "Fuori Casa")
 }
 
 export interface MealSection {
