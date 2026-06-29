@@ -7,13 +7,33 @@
   $: mains = $mainItems;
   $: base  = $savedBase;
 
+  type FoodRow = {
+    name: string;
+    qty: number;
+    kcal: number | null;
+    unitSize?: number;
+    unitLabel?: string;
+    portionLabel?: string; // per Fuori Casa: "1 pizza" invece di "450g"
+  };
+
   type MealRow = {
     label: string;
     today: { kcal: number; c: number; p: number; f: number };
     base:  { kcal: number; c: number; p: number; f: number } | null;
     delta: { kcal: number; c: number; p: number; f: number } | null;
-    foods: Array<{ name: string; qty: number; kcal: number | null }>;
+    foods: FoodRow[];
   };
+
+  const FC_PLURALI: Record<string, string> = {
+    'pizza': 'pizze', 'fetta': 'fette', 'panino': 'panini', 'piadina': 'piadine',
+    'porzione': 'porzioni', 'granita': 'granite', 'bistecca': 'bistecche',
+    'piatto': 'piatti', 'cono': 'coni', 'ghiacciolo': 'ghiaccioli',
+    'bombolone': 'bomboloni', 'cappuccino': 'cappuccini', 'cornetto': 'cornetti',
+    'bicchiere': 'bicchieri', 'tramezzino': 'tramezzini', 'vassoio': 'vassoi',
+  };
+  function fcPlural(unit: string, n: number) {
+    return n === 1 ? unit : (FC_PLURALI[unit] ?? unit);
+  }
 
   $: mealRows = MEALS.map(meal => {
     const todayTot = calcMealTotals(meal, qtys, mains);
@@ -25,18 +45,30 @@
       f:    todayTot.f - baseTot.f,
     } : null;
 
-    const foods = meal.groups
-      .map(group => {
-        const idx       = getMainIdx(group, mains);
-        const item      = group.items[idx];
-        const qty       = qtys[group.id]?.[idx] ?? item.qty;
-        const macro     = MACRO_DB[item.name];
-        const kcal      = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
-        const unitSize  = item.unitSize;
-        const unitLabel = item.unitLabel;
-        return { name: item.name, qty, kcal, unitSize, unitLabel };
-      })
-      .filter(f => f.qty > 0);
+    const foods: FoodRow[] = meal.groups.flatMap(group => {
+      if (group.portions) {
+        // Fuori Casa: espandi ogni item attivo come riga separata
+        return group.items
+          .map((item, i): FoodRow | null => {
+            const portions = qtys[group.id]?.[i] ?? 0;
+            if (portions <= 0) return null;
+            const grams = portions * item.qty;
+            const macro = MACRO_DB[item.name];
+            const kcal  = macro
+              ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) * grams / 100)
+              : null;
+            const unit = item.portionUnit ?? 'porzione';
+            return { name: item.name, qty: grams, kcal, portionLabel: `${portions} ${fcPlural(unit, portions)}` };
+          })
+          .filter((x): x is FoodRow => x !== null);
+      }
+      const idx       = getMainIdx(group, mains);
+      const item      = group.items[idx];
+      const qty       = qtys[group.id]?.[idx] ?? item.qty;
+      const macro     = MACRO_DB[item.name];
+      const kcal      = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
+      return [{ name: item.name, qty, kcal, unitSize: item.unitSize, unitLabel: item.unitLabel }];
+    }).filter(f => f.qty > 0);
 
     return { label: meal.label, today: todayTot, base: baseTot, delta, foods } satisfies MealRow;
   });
@@ -96,8 +128,13 @@
           <span class="food-name">{food.name}</span>
           <span class="food-meta">
             <span class="food-qty">
-              {food.unitSize ? Math.round(food.qty / food.unitSize) : food.qty}{food.unitSize ? '' : 'g'}
-              {#if food.unitLabel}&nbsp;{food.unitLabel}{/if}
+              {#if food.portionLabel}
+                {food.portionLabel}
+              {:else if food.unitSize}
+                {Math.round(food.qty / food.unitSize)}&nbsp;{food.unitLabel ?? ''}
+              {:else}
+                {food.qty}g
+              {/if}
             </span>
             {#if food.kcal !== null}
               <span class="food-kcal">{food.kcal} kcal</span>

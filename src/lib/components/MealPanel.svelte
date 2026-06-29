@@ -1,5 +1,6 @@
 <script lang="ts">
   import GroupCard from './GroupCard.svelte';
+  import FuoriCasaCard from './FuoriCasaCard.svelte';
   import SectionCard from './SectionCard.svelte';
   import MealTotals from './MealTotals.svelte';
   import type { Meal, FoodGroup } from '../types';
@@ -18,7 +19,11 @@
     {#each meal.sections as section}
       {#if section.groupIds.length === 1}
         {#each groupsForSection(section.groupIds) as group}
-          <GroupCard {group} />
+          {#if group.portions}
+            <FuoriCasaCard {group} />
+          {:else}
+            <GroupCard {group} />
+          {/if}
         {/each}
       {:else}
         <SectionCard {section} groups={groupsForSection(section.groupIds)} />
@@ -26,7 +31,11 @@
     {/each}
   {:else}
     {#each meal.groups as group}
-      <GroupCard {group} />
+      {#if group.portions}
+        <FuoriCasaCard {group} />
+      {:else}
+        <GroupCard {group} />
+      {/if}
     {/each}
   {/if}
   <MealTotals {meal} />

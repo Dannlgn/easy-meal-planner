@@ -21,7 +21,11 @@
   $: mealRows = base ? MEALS.map(meal => ({
     label: meal.label,
     mt:    calcMealTotals(meal, base.quantities, base.mains),
-    foods: meal.groups.map(g => groupFood(g.id, g.items)).filter((x): x is FoodInfo => x !== null),
+    // I gruppi Fuori Casa (portions) non fanno parte del piano base
+    foods: meal.groups
+      .filter(g => !g.portions)
+      .map(g => groupFood(g.id, g.items))
+      .filter((x): x is FoodInfo => x !== null),
   })) : null;
 
   $: dailyBase = base ? (() => {
