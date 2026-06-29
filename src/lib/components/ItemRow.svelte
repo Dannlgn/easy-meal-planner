@@ -44,8 +44,10 @@
       return { ...q, [group.id]: arr };
     });
 
-    if (!isMain && val > 0) setMain(group.id, idx); // promuovi a main + ricalcola
-    else if (isMain && val > 0) recalcGroupFromMain(group.id);
+    if (!group.portions) {
+      if (!isMain && val > 0) setMain(group.id, idx);
+      else if (isMain && val > 0) recalcGroupFromMain(group.id);
+    }
   }
 
   function handleKeydown(e: KeyboardEvent) {
@@ -67,8 +69,9 @@
   }
 </script>
 
-<div class="item-row" class:is-main={isMain} class:updated={flashing} class:zeroed={qty === 0}>
+<div class="item-row" class:is-main={isMain && !group.portions} class:updated={flashing} class:zeroed={qty === 0}>
   <div class="item-main-line">
+    {#if !group.portions}
     <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
     <div
       class="radio-indicator"
@@ -78,6 +81,7 @@
     >
       {#if isMain}<span class="radio-dot"></span>{/if}
     </div>
+    {/if}
 
     <div class="name-wrap">
       <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->

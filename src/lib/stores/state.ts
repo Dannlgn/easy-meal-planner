@@ -8,7 +8,7 @@ function initQtys(): Record<string, number[]> {
   const out: Record<string, number[]> = {};
   for (const meal of MEALS)
     for (const g of meal.groups)
-      out[g.id] = g.items.map(i => i.qty);
+      out[g.id] = g.portions ? g.items.map(() => 0) : g.items.map(i => i.qty);
   return out;
 }
 
@@ -124,7 +124,7 @@ function calcSmartQty(target: SmartTarget, substituteName: string): number {
 
 export function recalcGroupFromMain(groupId: string) {
   const group = findGroup(groupId);
-  if (!group) return;
+  if (!group || group.portions) return; // skip multi-select groups
   const mainIdx   = getMainIdx(group, get(mainItems));
   const mainItem  = group.items[mainIdx];
   const mainQty   = get(quantities)[groupId]?.[mainIdx] ?? mainItem.qty;
@@ -185,7 +185,7 @@ export function resetGroup(groupId: string) {
   const group = findGroup(groupId);
   if (!group) return;
   const currentQtys = get(quantities)[groupId] ?? [];
-  const origQtys = group.items.map(i => i.qty);
+  const origQtys = group.portions ? group.items.map(() => 0) : group.items.map(i => i.qty);
   quantities.update(q => ({ ...q, [groupId]: origQtys }));
   let anyChanged = false;
   origQtys.forEach((oq, i) => {
@@ -265,14 +265,28 @@ export function calcMealTotals(
 ) {
   let c = 0, p = 0, f = 0;
   for (const group of meal.groups) {
-    const mIdx  = getMainIdx(group, mains);
-    const item  = group.items[mIdx];
-    const qty   = qtys[group.id]?.[mIdx] ?? item.qty;
-    const macro = MACRO_DB[item.name];
-    if (macro && qty > 0) {
-      c += (macro.c * qty) / 100;
-      p += (macro.p * qty) / 100;
-      f += (macro.f * qty) / 100;
+    if (group.portions) {
+      // multi-select: somma tutti gli item con qty > 0
+      group.items.forEach((item, i) => {
+        const qty = qtys[group.id]?.[i] ?? 0;
+        if (qty <= 0) return;
+        const macro = MACRO_DB[item.name];
+        if (macro) {
+          c += (macro.c * qty) / 100;
+          p += (macro.p * qty) / 100;
+          f += (macro.f * qty) / 100;
+        }
+      });
+    } else {
+      const mIdx  = getMainIdx(group, mains);
+      const item  = group.items[mIdx];
+      const qty   = qtys[group.id]?.[mIdx] ?? item.qty;
+      const macro = MACRO_DB[item.name];
+      if (macro && qty > 0) {
+        c += (macro.c * qty) / 100;
+        p += (macro.p * qty) / 100;
+        f += (macro.f * qty) / 100;
+      }
     }
   }
   return { c, p, f, kcal: c * 4 + p * 4 + f * 9 };

@@ -63,6 +63,7 @@ export const MEALS: Meal[] = [
       },
       {
         id: 'col_fc', label: 'Fuori Casa',
+        portions: true,
         note: 'ℹ Valori approssimativi — variano per locale e preparazione',
         items: [
           { name: 'Cappuccino',              qty: 150, main: true, unitSize: 150, unitLabel: 'capp.' },
@@ -142,6 +143,7 @@ export const MEALS: Meal[] = [
       },
       {
         id: 'spu_fc', label: 'Fuori Casa',
+        portions: true,
         note: 'ℹ Valori approssimativi — variano per locale e preparazione',
         items: [
           { name: 'Gelato cono classico',     qty: 120, main: true, unitSize: 120, unitLabel: 'cono'   },
@@ -374,6 +376,7 @@ export const MEALS: Meal[] = [
       },
       {
         id: 'pra_fc', label: 'Fuori Casa',
+        portions: true,
         note: 'ℹ Valori approssimativi — variano per locale e preparazione',
         items: [
           { name: 'Pizza margherita – fetta',        qty: 150, main: true, unitSize: 150, unitLabel: 'fetta'  },
@@ -504,6 +507,7 @@ export const MEALS: Meal[] = [
       },
       {
         id: 'cen_fc', label: 'Fuori Casa',
+        portions: true,
         note: 'ℹ Valori approssimativi — variano per locale e preparazione',
         items: [
           { name: 'Pizza margherita – intera',          qty: 450, main: true, unitSize: 450, unitLabel: 'pizza'  },

@@ -10,7 +10,8 @@ export interface FoodGroup {
   id: string;
   label: string;
   items: FoodItem[];
-  note?: string; // riga informativa mostrata sotto il titolo (es. disclaimer "Fuori Casa")
+  note?: string;
+  portions?: boolean; // multi-select: ogni item contribuisce ai totali indipendentemente
 }
 
 export interface MealSection {

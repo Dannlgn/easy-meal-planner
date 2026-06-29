@@ -26,15 +26,21 @@
     } : null;
 
     const foods = meal.groups
-      .map(group => {
+      .flatMap(group => {
+        if (group.portions) {
+          return group.items.map((item, i) => {
+            const qty   = qtys[group.id]?.[i] ?? 0;
+            const macro = MACRO_DB[item.name];
+            const kcal  = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
+            return { name: item.name, qty, kcal, unitSize: item.unitSize, unitLabel: item.unitLabel };
+          });
+        }
         const idx       = getMainIdx(group, mains);
         const item      = group.items[idx];
         const qty       = qtys[group.id]?.[idx] ?? item.qty;
         const macro     = MACRO_DB[item.name];
         const kcal      = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
-        const unitSize  = item.unitSize;
-        const unitLabel = item.unitLabel;
-        return { name: item.name, qty, kcal, unitSize, unitLabel };
+        return [{ name: item.name, qty, kcal, unitSize: item.unitSize, unitLabel: item.unitLabel }];
       })
       .filter(f => f.qty > 0);
 
