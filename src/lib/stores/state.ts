@@ -25,7 +25,14 @@ function initMains(): Record<string, number> {
 function loadQtys(): Record<string, number[]> {
   try {
     const saved = localStorage.getItem('mp_quantities');
-    if (saved) return { ...initQtys(), ...JSON.parse(saved) };
+    if (saved) {
+      const merged = { ...initQtys(), ...JSON.parse(saved) };
+      // FC groups (portions) partono sempre a 0 — ignorano il localStorage
+      for (const meal of MEALS)
+        for (const g of meal.groups)
+          if (g.portions) merged[g.id] = g.items.map(() => 0);
+      return merged;
+    }
   } catch { /* ignore */ }
   return initQtys();
 }
