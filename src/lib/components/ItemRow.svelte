@@ -138,8 +138,11 @@
     transition: opacity .2s;
   }
   .item-row:last-child { border-bottom: none; }
-  .item-row.is-main    { background: var(--acl); }
-  .item-row.zeroed     { opacity: .38; }
+  .item-row.is-main {
+    background: var(--acl);
+    border-left: 3px solid var(--accent);
+  }
+  .item-row.zeroed { opacity: .35; }
 
   .item-main-line {
     display: flex;
@@ -183,6 +186,7 @@
 
   .item-name {
     font-size: 14px;
+    font-weight: 500;
     color: var(--text);
     line-height: 1.35;
   }
@@ -290,15 +294,17 @@
   .macro-pill.mp   { color: var(--mp); }
   .macro-pill.mf   { color: var(--mf); }
 
-  /* ── Flash animation ── */
+  /* ── Flash animation Smart Swap ── */
   @keyframes flash {
-    0%   { background: var(--flash); }
-    100% { background: var(--card); }
+    0%   { background: var(--flash); transform: scaleX(1.01); }
+    20%  { background: var(--flash); }
+    100% { background: var(--card); transform: scaleX(1); }
   }
   @keyframes flash-main {
-    0%   { background: var(--flash); }
-    100% { background: var(--acl); }
+    0%   { background: var(--flash); transform: scaleX(1.01); }
+    20%  { background: var(--flash); }
+    100% { background: var(--acl); transform: scaleX(1); }
   }
-  .item-row.updated          { animation: flash      .75s ease-out forwards; }
-  .item-row.is-main.updated  { animation: flash-main .75s ease-out forwards; }
+  .item-row.updated          { animation: flash      .85s ease-out forwards; }
+  .item-row.is-main.updated  { animation: flash-main .85s ease-out forwards; }
 </style>

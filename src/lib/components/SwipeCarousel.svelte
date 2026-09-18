@@ -3,11 +3,10 @@
   import MealPanel from './MealPanel.svelte';
   import BasePlan from './BasePlan.svelte';
   import TodayPlan from './TodayPlan.svelte';
-  import { activePage } from '../stores/state';
+  import { activePage, quantities, mainItems, savedBase, calcMealTotals } from '../stores/state';
   import { MEALS } from '../data/meals';
 
   // Ordine slide: [Oggi(6), Col(1), Spu(2), Spu2(3), Pra(4), Cen(5), Base(0)]
-  // Carousel index:    0       1       2       3        4       5       6
   const LAST_IDX       = 6;
   const DIST_THRESHOLD = 0.05;
   const VEL_THRESHOLD  = 0.10;
@@ -23,15 +22,15 @@
   let dragDx = 0;
 
   function pageToIdx(page: number): number {
-    if (page === 6) return 0;   // Oggi → slide 0
-    if (page >= 1 && page <= 5) return page; // Col–Cen → slide 1-5
-    return 6;                   // Base (0) → slide 6
+    if (page === 6) return 0;
+    if (page >= 1 && page <= 5) return page;
+    return 6;
   }
 
   function idxToPage(idx: number): number {
-    if (idx === 0) return 6;    // slide 0 → Oggi
-    if (idx === 6) return 0;    // slide 6 → Base
-    return idx;                 // 1-5 → Colazione..Cena
+    if (idx === 0) return 6;
+    if (idx === 6) return 0;
+    return idx;
   }
 
   function slideW(): number {
@@ -52,16 +51,34 @@
     setTimeout(() => { animLock = false; }, 250);
   }
 
-  // Sincronizza posizione quando activePage cambia da header/esterno
   $: if (!animLock && mounted && slider) {
     animateTo(pageToIdx($activePage), true);
   }
 
-  // ── Touch handlers su document — coprono header + body ───
+  function isMealModified(mealIdx: number): boolean {
+    const meal = MEALS[mealIdx];
+    const base = $savedBase;
+    const qtys  = $quantities;
+    const mains = $mainItems;
+    if (!base) {
+      for (const g of meal.groups) {
+        const dm = Math.max(0, g.items.findIndex(it => it.main));
+        if ((mains[g.id] ?? dm) !== dm) return true;
+        const cur = qtys[g.id];
+        if (cur && cur.some((v, i) => v !== g.items[i].qty)) return true;
+      }
+      return false;
+    }
+    const todayTot = calcMealTotals(meal, qtys, mains);
+    const baseTot  = calcMealTotals(meal, base.quantities, base.mains);
+    return Math.abs(todayTot.kcal - baseTot.kcal) > 1;
+  }
+
+  // ── Touch handlers su document ───
   function onTouchStart(e: TouchEvent) {
-    // Lascia che l'header gestisca i propri touch (scroll tab bar)
     if ((e.target as Element)?.closest('header')) return;
-    // Non intercettare gesti su input/select per non disturbare l'editing
+    if ((e.target as Element)?.closest('.meal-subtabs')) return;
+    if ((e.target as Element)?.closest('.bottom-nav')) return;
     const tag = (e.target as Element)?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
     touchX0 = e.touches[0].clientX;
@@ -142,7 +159,7 @@
   }
 
   onMount(() => {
-    animLock = true; // blocca la reactive durante il posizionamento iniziale
+    animLock = true;
     mounted = true;
     requestAnimationFrame(() => {
       animateTo(pageToIdx($activePage), false);
@@ -152,13 +169,10 @@
     const onResize = () => animateTo(pageToIdx($activePage), false);
     window.addEventListener('resize', onResize);
 
-    // Listener su document con { passive: false } esplicito — così
-    // e.preventDefault() funziona anche su elementi overflow:auto (tab bar)
     document.addEventListener('touchstart', onTouchStart, { passive: true });
     document.addEventListener('touchmove',  onTouchMove,  { passive: false });
     document.addEventListener('touchend',   onTouchEnd,   { passive: true });
 
-    // Nudge hint alla prima apertura su un pasto
     if (!localStorage.getItem('mp_swipe_hint') && $activePage >= 1 && $activePage <= 5) {
       setTimeout(() => {
         if (!slider) return;
@@ -182,6 +196,26 @@
 </script>
 
 <div class="carousel-wrap">
+
+  <!-- Sub-tabs per i pasti — visibili solo quando activePage è 1-5 -->
+  {#if $activePage >= 1 && $activePage <= 5}
+    <div class="meal-subtabs" role="tablist" aria-label="Pasto attivo">
+      {#each MEALS as meal, i}
+        <button
+          class:active={$activePage === i + 1}
+          role="tab"
+          aria-selected={$activePage === i + 1}
+          on:click={() => navigateTo(i + 1)}
+        >
+          {meal.label}
+          {#if isMealModified(i)}
+            <span class="mod-dot" aria-label="modificato"></span>
+          {/if}
+        </button>
+      {/each}
+    </div>
+  {/if}
+
   <div class="carousel-outer" bind:this={outer}>
     <div class="carousel-slider" bind:this={slider}>
 
@@ -211,31 +245,70 @@
     </div>
   </div>
 
-  <!-- Dots solo per i pasti (activePage 1-5) -->
-  {#if $activePage >= 1 && $activePage <= 5}
-    <div class="dots" role="tablist" aria-label="Pasto attivo">
-      {#each MEALS as meal, i}
-        <button
-          class="dot"
-          class:active={$activePage === i + 1}
-          on:click={() => navigateTo(i + 1)}
-          aria-label={meal.label}
-          role="tab"
-          aria-selected={$activePage === i + 1}
-        ></button>
-      {/each}
-    </div>
-  {/if}
 </div>
 
 <style>
-  /* Occupa tutto lo spazio rimanente sotto l'header */
   .carousel-wrap {
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+  }
+
+  /* ── Sub-tabs pasti ── */
+  .meal-subtabs {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background: var(--hdr);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    flex-shrink: 0;
+    height: var(--subtabs-h);
+    align-items: stretch;
+    padding: 0 4px;
+    gap: 2px;
+  }
+  .meal-subtabs::-webkit-scrollbar { display: none; }
+
+  .meal-subtabs button {
+    flex-shrink: 0;
+    padding: 0 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,.45);
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color .15s, border-color .15s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .meal-subtabs button.active {
+    color: #fff;
+    font-weight: 700;
+    border-bottom-color: var(--accent);
+  }
+  .meal-subtabs button:active { color: rgba(255,255,255,.8); }
+
+  .mod-dot {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--mc);
+    display: block;
+    pointer-events: none;
   }
 
   .carousel-outer {
@@ -251,7 +324,6 @@
     will-change: transform;
   }
 
-  /* Ogni slide scrolla il proprio contenuto in modo indipendente */
   .carousel-slide {
     flex: 0 0 100%;
     width: 100%;
@@ -261,41 +333,15 @@
     overscroll-behavior: none;
   }
 
-  /* 86px bottom = spazio per StickyTotals fisso */
+  /* bottom padding: StickyTotals (60px) + BottomNav (56px) + gap */
   .slide-inner {
-    padding: 14px 16px 86px;
+    padding: 14px 16px 128px;
   }
 
-  /* Oggi / Base */
   .page-slide {
-    padding: 14px 14px 86px;
+    padding: 14px 14px 128px;
     max-width: 560px;
     margin: 0 auto;
     box-sizing: border-box;
-  }
-
-  .dots {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    padding: 12px 0 8px;
-  }
-
-  .dot {
-    height: 6px;
-    border-radius: 3px;
-    background: var(--border);
-    border: none;
-    cursor: pointer;
-    padding: 8px 3px;
-    box-sizing: content-box;
-    width: 6px;
-    background-clip: content-box;
-    transition: background .2s, width .25s cubic-bezier(.4,0,.2,1);
-  }
-  .dot.active {
-    background: var(--accent);
-    width: 20px;
   }
 </style>

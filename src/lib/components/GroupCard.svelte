@@ -94,8 +94,8 @@
     min-height: 52px;
     transition: background .15s;
   }
-  .group-header:active { background: #254d7a; }
-  .group-header.all-zero { opacity: .46; }
+  .group-header:active { background: #2D3F52; }
+  .group-header.all-zero { opacity: .42; }
 
   .inactive-hint {
     font-size: 12px;
@@ -116,8 +116,8 @@
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: .8px;
-    opacity: .65;
+    letter-spacing: 1px;
+    opacity: .55;
   }
 
   .group-note {
@@ -130,7 +130,7 @@
   }
 
   .main-preview {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: #fff;
     display: flex;

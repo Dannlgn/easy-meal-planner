@@ -1,45 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* ── Brand (navy) ── */
-  --hdr:      #0f2942;   /* deep navy — sticky header bg */
-  --hdr2:     #1a3a5c;   /* mid navy — group/section/meal headers */
+  /* ── Brand ── */
+  --hdr:      #0F172A;   /* slate-900 — header bg */
+  --hdr2:     #1E293B;   /* slate-800 — group headers */
 
   /* ── Surface ── */
-  --bg:       #f1f5f9;   /* slate-100 — page background */
-  --card:     #ffffff;
+  --bg:       #F1F5F9;   /* slate-100 */
+  --card:     #FFFFFF;
 
   /* ── Interactive ── */
-  --accent:   #3b82f6;   /* blue-500 — buttons, radio, active states */
-  --accent-dk:#1d4ed8;   /* blue-700 — pressed */
-  --acl:      #eff6ff;   /* blue-50  — selection bg, input focus bg */
+  --accent:   #2563EB;   /* blue-600 */
+  --accent-dk:#1D4ED8;   /* blue-700 */
+  --acl:      #EFF6FF;   /* blue-50 */
 
   /* ── Text ── */
-  --text:     #0f172a;   /* slate-900 */
-  --muted:    #64748b;   /* slate-500 */
+  --text:     #0F172A;   /* slate-900 */
+  --muted:    #64748B;   /* slate-500 */
 
   /* ── Borders & Radius & Shadow ── */
-  --border:   #e2e8f0;   /* slate-200 */
-  --r:        12px;
-  --r-sm:     8px;
-  --r-lg:     16px;
-  --sh:       0 1px 3px rgba(15,41,66,.07), 0 4px 12px rgba(15,41,66,.06);
-  --sh-lg:    0 4px 24px rgba(15,41,66,.20);
+  --border:   #E2E8F0;   /* slate-200 */
+  --r:        14px;
+  --r-sm:     9px;
+  --r-lg:     18px;
+  --sh:       0 1px 2px rgba(15,23,42,.05), 0 4px 14px rgba(15,23,42,.06);
+  --sh-lg:    0 8px 32px rgba(15,23,42,.18);
 
-  /* ── Macro nutrients (3 colori completamente distinti) ── */
-  --mc:       #f97316;   /* orange-500 — Carboidrati */
-  --mp:       #06b6d4;   /* cyan-500   — Proteine (non più uguale ad --accent!) */
-  --mf:       #a855f7;   /* purple-500 — Grassi (non più uguale a --neg!) */
+  /* ── Macro nutrients ── */
+  --mc:       #F97316;   /* orange-500 — Carboidrati */
+  --mp:       #0EA5E9;   /* sky-500    — Proteine */
+  --mf:       #8B5CF6;   /* violet-500 — Grassi */
 
   /* ── Semantic ── */
-  --pos:      #ef4444;   /* red-500   — delta sopra piano / alert */
-  --neg:      #22c55e;   /* green-500 — delta sotto piano */
-  --err:      #ef4444;
-  --err-bg:   #fef2f2;   /* red-50 */
-  --warn-bg:  #fffbeb;   /* amber-50 */
-  --warn-brd: #fbbf24;   /* amber-400 */
-  --warn-txt: #78350f;   /* amber-900 */
-  --flash:    #fef08a;   /* yellow-200 */
+  --pos:      #EF4444;
+  --neg:      #22C55E;
+  --err:      #EF4444;
+  --err-bg:   #FEF2F2;
+  --warn-bg:  #FFFBEB;
+  --warn-brd: #FBBF24;
+  --warn-txt: #78350F;
+  --flash:    #FDE047;   /* yellow-300 — più vivido per Smart Swap */
+
+  /* ── Layout heights ── */
+  --header-h:    52px;
+  --subtabs-h:   44px;
+  --totals-h:    60px;
+  --botnav-h:    56px;
 }
 
 html {
@@ -49,7 +57,7 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
   height: 100%;
@@ -65,7 +73,7 @@ body {
 }
 
 main {
-  padding: 14px 14px 100px;
+  padding: 14px 14px 120px;
   max-width: 560px;
   margin: 0 auto;
 }
