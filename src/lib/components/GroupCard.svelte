@@ -15,7 +15,6 @@
   $: mainKcal = macro && mainQty > 0
     ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * mainQty)
     : null;
-  // true quando ogni alimento del gruppo è a 0g → header "spento"
   $: allZero  = group.items.every((item, i) => ($quantities[group.id]?.[i] ?? item.qty) === 0);
 
   function showSep(idx: number): boolean {
@@ -74,19 +73,17 @@
   .group-card {
     background: var(--card);
     border-radius: var(--r);
-    box-shadow: var(--sh);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     overflow: hidden;
-    transition: box-shadow .15s;
   }
 
   .group-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 11px 14px;
-    background: var(--hdr2);
-    color: #fff;
+    padding: 12px 14px;
+    background: transparent;
+    color: var(--text);
     gap: 8px;
     cursor: pointer;
     user-select: none;
@@ -94,15 +91,8 @@
     min-height: 52px;
     transition: background .15s;
   }
-  .group-header:active { background: #2D3F52; }
-  .group-header.all-zero { opacity: .42; }
-
-  .inactive-hint {
-    font-size: 12px;
-    font-style: italic;
-    color: rgba(255,255,255,.42);
-    margin-top: 1px;
-  }
+  .group-header:active { background: var(--bg3); }
+  .group-header.all-zero { opacity: .38; }
 
   .header-left {
     display: flex;
@@ -113,26 +103,32 @@
   }
 
   .group-title {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    opacity: .55;
+    color: rgba(255,255,255,.28);
   }
 
   .group-note {
     font-size: 10px;
     font-weight: 400;
-    opacity: .55;
+    color: rgba(255,255,255,.22);
     letter-spacing: 0;
     text-transform: none;
     font-style: italic;
   }
 
+  .inactive-hint {
+    font-size: 12px;
+    font-style: italic;
+    color: rgba(255,255,255,.28);
+  }
+
   .main-preview {
     font-size: 14px;
     font-weight: 600;
-    color: #fff;
+    color: var(--text);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -143,13 +139,13 @@
   .preview-qty {
     font-size: 12px;
     font-weight: 700;
-    opacity: .9;
+    color: var(--accent);
   }
 
   .preview-kcal {
     font-size: 11px;
     font-weight: 400;
-    opacity: .5;
+    color: var(--muted);
   }
 
   .header-right {
@@ -159,38 +155,39 @@
   }
 
   .chevron {
-    font-size: 18px;
-    opacity: .6;
+    font-size: 16px;
+    color: rgba(255,255,255,.25);
     transition: transform .2s ease-out;
     display: block;
     line-height: 1;
   }
-  .chevron.open { transform: rotate(180deg); opacity: .9; }
+  .chevron.open { transform: rotate(180deg); color: rgba(255,255,255,.5); }
 
   .card-footer {
     border-top: 1px solid var(--border);
     padding: 8px 14px;
     display: flex;
     justify-content: flex-end;
+    background: var(--bg);
   }
 
   .btn-reset {
     background: none;
     border: none;
-    color: var(--muted);
-    font-size: 12px;
+    color: rgba(255,255,255,.22);
+    font-size: 11px;
     font-weight: 500;
     cursor: pointer;
     padding: 6px 4px;
     min-height: 32px;
-    opacity: .75;
-    transition: opacity .15s;
+    font-family: inherit;
+    transition: color .15s;
   }
-  .btn-reset:active { opacity: 1; color: var(--text); }
+  .btn-reset:active { color: var(--muted); }
 
   .item-sep {
     height: 0;
-    border-bottom: 1.5px dashed var(--border);
+    border-bottom: 1px solid var(--border);
     margin: 0 14px;
   }
 </style>

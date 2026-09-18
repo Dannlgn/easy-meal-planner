@@ -266,24 +266,24 @@
     border-bottom: 1px solid rgba(255,255,255,.06);
     flex-shrink: 0;
     height: var(--subtabs-h);
-    align-items: stretch;
-    padding: 0 4px;
-    gap: 2px;
+    align-items: center;
+    padding: 0 10px;
+    gap: 6px;
   }
   .meal-subtabs::-webkit-scrollbar { display: none; }
 
   .meal-subtabs button {
     flex-shrink: 0;
-    padding: 0 14px;
-    font-size: 13px;
-    font-weight: 500;
-    color: rgba(255,255,255,.45);
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,.42);
     cursor: pointer;
     border: none;
-    background: none;
-    border-bottom: 2px solid transparent;
+    background: rgba(255,255,255,.07);
+    border-radius: 20px;
     white-space: nowrap;
-    transition: color .15s, border-color .15s;
+    transition: color .15s, background .15s;
     position: relative;
     display: flex;
     align-items: center;
@@ -295,9 +295,9 @@
   .meal-subtabs button.active {
     color: #fff;
     font-weight: 700;
-    border-bottom-color: var(--accent);
+    background: var(--accent);
   }
-  .meal-subtabs button:active { color: rgba(255,255,255,.8); }
+  .meal-subtabs button:active { opacity: .8; }
 
   .mod-dot {
     position: absolute;

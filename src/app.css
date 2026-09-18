@@ -4,48 +4,49 @@
 
 :root {
   /* ── Brand ── */
-  --hdr:      #0F172A;   /* slate-900 — header bg */
-  --hdr2:     #1E293B;   /* slate-800 — group headers */
+  --hdr:      #111113;
+  --hdr2:     #1C1C1E;
 
   /* ── Surface ── */
-  --bg:       #F1F5F9;   /* slate-100 */
-  --card:     #FFFFFF;
+  --bg:       #111113;
+  --card:     #1C1C1E;
+  --bg3:      #2C2C2E;   /* pill bg, input bg */
 
   /* ── Interactive ── */
-  --accent:   #2563EB;   /* blue-600 */
-  --accent-dk:#1D4ED8;   /* blue-700 */
-  --acl:      #EFF6FF;   /* blue-50 */
+  --accent:   #3B82F6;
+  --accent-dk:#2563EB;
+  --acl:      rgba(59,130,246,.14);
 
   /* ── Text ── */
-  --text:     #0F172A;   /* slate-900 */
-  --muted:    #64748B;   /* slate-500 */
+  --text:     #F5F5F7;
+  --muted:    #AEAEB2;
 
   /* ── Borders & Radius & Shadow ── */
-  --border:   #E2E8F0;   /* slate-200 */
+  --border:   #3A3A3C;
   --r:        14px;
   --r-sm:     9px;
   --r-lg:     18px;
-  --sh:       0 1px 2px rgba(15,23,42,.05), 0 4px 14px rgba(15,23,42,.06);
-  --sh-lg:    0 8px 32px rgba(15,23,42,.18);
+  --sh:       none;
+  --sh-lg:    0 8px 32px rgba(0,0,0,.4);
 
   /* ── Macro nutrients ── */
-  --mc:       #F97316;   /* orange-500 — Carboidrati */
-  --mp:       #0EA5E9;   /* sky-500    — Proteine */
-  --mf:       #8B5CF6;   /* violet-500 — Grassi */
+  --mc:       #F97316;   /* orange  — Carboidrati */
+  --mp:       #A78BFA;   /* purple  — Proteine */
+  --mf:       #FBBF24;   /* amber   — Grassi */
 
   /* ── Semantic ── */
-  --pos:      #EF4444;
-  --neg:      #22C55E;
-  --err:      #EF4444;
-  --err-bg:   #FEF2F2;
-  --warn-bg:  #FFFBEB;
+  --pos:      #F87171;
+  --neg:      #34D399;
+  --err:      #F87171;
+  --err-bg:   rgba(248,113,113,.12);
+  --warn-bg:  rgba(251,191,36,.08);
   --warn-brd: #FBBF24;
-  --warn-txt: #78350F;
-  --flash:    #FDE047;   /* yellow-300 — più vivido per Smart Swap */
+  --warn-txt: #FDE68A;
+  --flash:    #FDE047;
 
   /* ── Layout heights ── */
-  --header-h:    52px;
-  --subtabs-h:   44px;
+  --header-h:    48px;
+  --subtabs-h:   46px;
   --totals-h:    60px;
   --botnav-h:    56px;
 }

@@ -219,13 +219,13 @@
   input[type="number"] {
     width: 62px;
     text-align: right;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid rgba(255,255,255,.12);
     border-radius: var(--r-sm);
     padding: 8px 8px;
     font-size: 15px;
     font-weight: 600;
     color: var(--text);
-    background: var(--card);
+    background: rgba(255,255,255,.07);
     outline: none;
     -webkit-appearance: none;
     appearance: none;

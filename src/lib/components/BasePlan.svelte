@@ -5,7 +5,15 @@
 
   $: base = $savedBase;
 
-  type FoodInfo = { name: string; qty: number; kcal: number | null };
+  const MEAL_COLORS: Record<string, string> = {
+    'Colazione':   '#F97316',
+    'Spuntino':    '#A78BFA',
+    'Spuntino 2':  '#A78BFA',
+    'Pranzo':      '#3B82F6',
+    'Cena':        '#34D399',
+  };
+
+  type FoodInfo = { name: string; qty: number; kcal: number | null; unitSize?: number; unitLabel?: string };
 
   function groupFood(groupId: string, items: typeof MEALS[0]['groups'][0]['items']): FoodInfo | null {
     if (!base) return null;
@@ -15,11 +23,12 @@
     if (qty <= 0) return null;
     const macro = MACRO_DB[item.name];
     const kcal  = macro ? Math.round((macro.c * 4 + macro.p * 4 + macro.f * 9) / 100 * qty) : null;
-    return { name: item.name, qty, kcal };
+    return { name: item.name, qty, kcal, unitSize: item.unitSize, unitLabel: item.unitLabel };
   }
 
   $: mealRows = base ? MEALS.map(meal => ({
     label: meal.label,
+    color: MEAL_COLORS[meal.label] ?? '#AEAEB2',
     mt:    calcMealTotals(meal, base.quantities, base.mains),
     foods: meal.groups.map(g => groupFood(g.id, g.items)).filter((x): x is FoodInfo => x !== null),
   })) : null;
@@ -47,13 +56,13 @@
 <div class="base-wrap">
   {#if !base}
     <div class="empty-state">
-      <div class="empty-icon">📋</div>
+      <div class="empty-dot"></div>
       <h2>Nessun piano base salvato</h2>
       <p>Configura i pasti nelle tab <strong>Colazione, Spuntino, Pranzo e Cena</strong>, poi torna qui e salva il tuo piano di riferimento.</p>
       <p class="hint">Il piano base è fisso — le modifiche giornaliere non lo toccano mai.</p>
       <div class="empty-actions">
-        <button class="btn-meal" on:click={() => activePage.set(1)}>Vai a Colazione →</button>
-        <button class="btn-save primary" on:click={saveAsBase}>Salva piano attuale come Base</button>
+        <button class="btn-outline" on:click={() => activePage.set(1)}>Vai a Colazione</button>
+        <button class="btn-save-base" on:click={saveAsBase}>Salva piano attuale come Base</button>
       </div>
     </div>
   {:else}
@@ -65,7 +74,10 @@
     {#each mealRows ?? [] as row}
       <section class="meal-section">
         <div class="meal-header">
-          <span class="meal-label">{row.label}</span>
+          <div class="meal-header-left">
+            <span class="dot" style="background:{row.color}"></span>
+            <span class="meal-label">{row.label}</span>
+          </div>
           <span class="meal-kcal">{Math.round(row.mt.kcal)} kcal</span>
         </div>
 
@@ -73,7 +85,10 @@
           <div class="food-row">
             <span class="food-name">{food.name}</span>
             <span class="food-meta">
-              <span class="food-qty">{food.qty}g</span>
+              <span class="food-qty">
+                {food.unitSize ? Math.round(food.qty / food.unitSize) : food.qty}{food.unitSize ? '' : 'g'}
+                {#if food.unitLabel}&nbsp;{food.unitLabel}{/if}
+              </span>
               {#if food.kcal !== null}
                 <span class="food-kcal">{food.kcal} kcal</span>
               {/if}
@@ -110,15 +125,13 @@
         </div>
       </div>
     {:else}
-      <button class="btn-save" on:click={handleUpdate}>Aggiorna piano base</button>
+      <button class="btn-update" on:click={handleUpdate}>Aggiorna piano base</button>
     {/if}
   {/if}
 </div>
 
 <style>
-  .base-wrap {
-    padding: 0 0 20px;
-  }
+  .base-wrap { padding: 0 0 20px; }
 
   .base-label-row {
     display: flex;
@@ -127,7 +140,7 @@
     margin-bottom: 14px;
   }
   .base-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--accent);
     text-transform: uppercase;
@@ -135,53 +148,91 @@
   }
   .base-hint { font-size: 11px; color: var(--muted); }
 
-  .empty-state { text-align: center; padding: 32px 16px; }
-  .empty-icon  { font-size: 44px; margin-bottom: 14px; }
-  .empty-state h2 { font-size: 17px; font-weight: 700; color: var(--text); margin: 0 0 10px; }
+  /* Empty state */
+  .empty-state { text-align: center; padding: 40px 16px; }
+  .empty-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(59,130,246,.18);
+    border: 2px solid var(--accent);
+    margin: 0 auto 18px;
+  }
+  .empty-state h2 { font-size: 17px; font-weight: 700; color: var(--text); margin: 0 0 12px; }
   .empty-state p  { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0 0 8px; }
-  .empty-state .hint { font-size: 12px; color: var(--accent); font-style: italic; margin-bottom: 24px; }
+  .empty-state .hint { font-size: 12px; color: var(--accent); font-style: italic; margin-bottom: 28px; }
   .empty-actions { display: flex; flex-direction: column; gap: 10px; }
-  .btn-meal {
+
+  .btn-outline {
     background: transparent;
     border: 1.5px solid var(--border);
-    color: var(--accent);
+    color: var(--muted);
     padding: 12px;
     border-radius: var(--r);
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     min-height: 44px;
+    font-family: inherit;
     transition: background .15s;
   }
-  .btn-meal:active { background: var(--acl); }
+  .btn-outline:active { background: var(--bg3); }
 
+  .btn-save-base {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    padding: 13px;
+    border-radius: var(--r);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 48px;
+    font-family: inherit;
+    transition: background .15s;
+  }
+  .btn-save-base:active { background: var(--accent-dk); }
+
+  /* Meal sections */
   .meal-section {
     background: var(--card);
     border-radius: var(--r);
-    box-shadow: var(--sh);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     overflow: hidden;
   }
+
   .meal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
-    background: var(--hdr2);
-    color: #fff;
+    padding: 11px 14px;
+    background: transparent;
   }
-  .meal-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; opacity: .75; }
-  .meal-kcal  { font-size: 12px; font-weight: 600; opacity: .85; }
+
+  .meal-header-left {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .meal-label { font-size: 13px; font-weight: 700; color: var(--text); }
+  .meal-kcal  { font-size: 12px; font-weight: 600; color: var(--muted); }
 
   .food-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 9px 14px;
-    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
     gap: 8px;
   }
-  .food-row:last-of-type { border-bottom: none; }
   .food-name { font-size: 13px; color: var(--text); flex: 1; min-width: 0; }
   .food-meta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
   .food-qty  { font-size: 13px; font-weight: 700; color: var(--text); min-width: 36px; text-align: right; }
@@ -191,7 +242,7 @@
     display: flex;
     gap: 14px;
     padding: 8px 14px;
-    background: var(--acl);
+    background: rgba(59,130,246,.07);
     border-top: 1px solid var(--border);
   }
   .meal-macros span { font-size: 11px; font-weight: 500; }
@@ -203,7 +254,6 @@
   .daily-card {
     background: var(--card);
     border-radius: var(--r);
-    box-shadow: var(--sh);
     padding: 16px;
     margin-bottom: 16px;
     border-top: 3px solid var(--accent);
@@ -217,27 +267,22 @@
   .d-val.mf { color: var(--mf); }
   .d-lbl   { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
 
-  .btn-save {
+  .btn-update {
     width: 100%;
     padding: 13px;
     border-radius: var(--r);
-    border: 1.5px solid var(--border);
-    background: transparent;
-    color: var(--muted);
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: rgba(255,255,255,.35);
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     margin-bottom: 8px;
     min-height: 48px;
+    font-family: inherit;
     transition: background .15s, color .15s;
   }
-  .btn-save:active { background: var(--bg); }
-  .btn-save.primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-  .btn-save.primary:active { background: var(--accent-dk); }
+  .btn-update:active { background: var(--bg3); color: var(--muted); }
 
   .confirm-box {
     background: var(--warn-bg);
@@ -251,14 +296,14 @@
   .btn-cancel {
     flex: 1; padding: 11px; border-radius: var(--r);
     border: 1.5px solid var(--border); background: var(--card); color: var(--muted);
-    font-size: 13px; font-weight: 600; cursor: pointer; min-height: 44px;
+    font-size: 13px; font-weight: 600; cursor: pointer; min-height: 44px; font-family: inherit;
     transition: background .15s;
   }
   .btn-cancel:active { background: var(--bg); }
   .btn-confirm-ok {
     flex: 1; padding: 11px; border-radius: var(--r);
     border: none; background: var(--pos); color: #fff;
-    font-size: 13px; font-weight: 700; cursor: pointer; min-height: 44px;
+    font-size: 13px; font-weight: 700; cursor: pointer; min-height: 44px; font-family: inherit;
     transition: opacity .15s;
   }
   .btn-confirm-ok:active { opacity: .82; }

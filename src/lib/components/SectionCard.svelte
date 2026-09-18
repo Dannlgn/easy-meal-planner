@@ -8,7 +8,16 @@
 
   let expanded = false;
 
-  // Quante sottocategorie hanno almeno un alimento > 0g
+  const SECTION_COLORS: Record<string, string> = {
+    'Carboidrati': '#3B82F6',
+    'Proteico':    '#A78BFA',
+    'Verdura':     '#34D399',
+    'Grassi':      '#FBBF24',
+    'Fuori Casa':  '#F97316',
+  };
+
+  $: dotColor = SECTION_COLORS[section.label] ?? '#AEAEB2';
+
   $: activeCount    = groups.filter(g =>
     g.items.some((item, i) => ($quantities[g.id]?.[i] ?? item.qty) > 0)
   ).length;
@@ -19,14 +28,15 @@
   <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
   <div class="section-header" class:all-zero={sectionAllZero} on:click={() => expanded = !expanded}>
     <div class="header-left">
+      <span class="dot" style="background: {dotColor}"></span>
       <span class="section-title">{section.label}</span>
       {#if !expanded}
         {#if sectionAllZero}
           <span class="section-count zero">— non incluso</span>
         {:else if activeCount < groups.length}
-          <span class="section-count">{activeCount} {activeCount === 1 ? 'attiva' : 'attive'} su {groups.length}</span>
+          <span class="section-count">{activeCount}/{groups.length}</span>
         {:else}
-          <span class="section-count">{groups.length} {groups.length === 1 ? 'categoria' : 'categorie'}</span>
+          <span class="section-count">{groups.length}</span>
         {/if}
       {/if}
     </div>
@@ -46,8 +56,7 @@
   .section-card {
     background: var(--card);
     border-radius: var(--r);
-    box-shadow: var(--sh);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     overflow: hidden;
   }
 
@@ -56,58 +65,62 @@
     align-items: center;
     justify-content: space-between;
     padding: 13px 14px;
-    background: var(--hdr2);
+    background: transparent;
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
     gap: 8px;
-    min-height: 54px;
+    min-height: 50px;
     transition: background .15s;
-    border-left: 3px solid var(--accent);
   }
-  .section-header:active { background: #2D3F52; }
+  .section-header:active { background: var(--bg3); }
   .section-header.all-zero { opacity: .42; }
-
-  .section-count.zero {
-    color: rgba(255,255,255,.40);
-    font-style: italic;
-  }
 
   .header-left {
     display: flex;
-    align-items: baseline;
-    gap: 8px;
+    align-items: center;
+    gap: 10px;
     min-width: 0;
+    flex: 1;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
   }
 
   .section-title {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: rgba(255,255,255,.9);
+    color: var(--text);
     white-space: nowrap;
   }
 
   .section-count {
     font-size: 11px;
     font-weight: 400;
-    color: rgba(255,255,255,.45);
+    color: var(--muted);
     white-space: nowrap;
+  }
+  .section-count.zero {
+    color: rgba(255,255,255,.30);
+    font-style: italic;
   }
 
   .chevron {
-    font-size: 18px;
-    color: rgba(255,255,255,.80);
+    font-size: 16px;
+    color: rgba(255,255,255,.30);
     transition: transform .2s ease-out;
     line-height: 1;
     flex-shrink: 0;
   }
-  .chevron.open { transform: rotate(180deg); color: #fff; }
+  .chevron.open { transform: rotate(180deg); color: rgba(255,255,255,.55); }
 
   .section-body {
     background: var(--bg);
-    padding: 8px;
+    padding: 6px;
   }
 
   .section-body :global(.group-card:last-child) {
