@@ -139,19 +139,19 @@
         <span class="pill-dot" style="background:#F97316"></span>
         <span class="pill-label">Carb</span>
         <span class="pill-val">{dailyToday.c.toFixed(0)}g</span>
-        {#if dailyDelta}<span class="pill-delta {deltaClass(dailyDelta.c)}">{sign(dailyDelta.c)}{dailyDelta.c.toFixed(0)}</span>{/if}
+        {#if dailyDelta && Math.abs(dailyDelta.c) >= 1}<span class="pill-delta {deltaClass(dailyDelta.c)}">{sign(dailyDelta.c)}{dailyDelta.c.toFixed(0)}</span>{/if}
       </div>
       <div class="macro-pill mp">
         <span class="pill-dot" style="background:#A78BFA"></span>
         <span class="pill-label">Prot</span>
         <span class="pill-val">{dailyToday.p.toFixed(0)}g</span>
-        {#if dailyDelta}<span class="pill-delta {deltaClass(dailyDelta.p)}">{sign(dailyDelta.p)}{dailyDelta.p.toFixed(0)}</span>{/if}
+        {#if dailyDelta && Math.abs(dailyDelta.p) >= 1}<span class="pill-delta {deltaClass(dailyDelta.p)}">{sign(dailyDelta.p)}{dailyDelta.p.toFixed(0)}</span>{/if}
       </div>
       <div class="macro-pill mf">
         <span class="pill-dot" style="background:#FBBF24"></span>
         <span class="pill-label">Grassi</span>
         <span class="pill-val">{dailyToday.f.toFixed(0)}g</span>
-        {#if dailyDelta}<span class="pill-delta {deltaClass(dailyDelta.f)}">{sign(dailyDelta.f)}{dailyDelta.f.toFixed(0)}</span>{/if}
+        {#if dailyDelta && Math.abs(dailyDelta.f) >= 1}<span class="pill-delta {deltaClass(dailyDelta.f)}">{sign(dailyDelta.f)}{dailyDelta.f.toFixed(0)}</span>{/if}
       </div>
     </div>
   </div>
@@ -167,7 +167,7 @@
           <span class="meal-card-kcal">{Math.round(row.today.kcal)} kcal</span>
         </div>
         <div class="meal-card-right">
-          {#if row.delta}
+          {#if row.delta && Math.abs(row.delta.kcal) >= 2}
             {@const dc = deltaClass(row.delta.kcal)}
             <span class="delta-badge" class:pos={dc==='pos'} class:neg={dc==='neg'} class:zero={dc==='zero'}>
               {sign(row.delta.kcal)}{Math.round(row.delta.kcal)}

@@ -8,6 +8,12 @@
 
   let expanded = false;
 
+  $: displayLabel = group.label.includes('–')
+    ? group.label.split('–').pop()!.trim()
+    : group.label.includes(' - ')
+    ? group.label.split(' - ').pop()!.trim()
+    : group.label;
+
   $: mainIdx  = getMainIdx(group, $mainItems);
   $: mainItem = group.items[mainIdx];
   $: mainQty  = $quantities[group.id]?.[mainIdx] ?? mainItem.qty;
@@ -32,7 +38,7 @@
   <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
   <div class="group-header" class:all-zero={allZero} on:click={() => expanded = !expanded}>
     <div class="header-left">
-      <span class="group-title">{group.label}</span>
+      <span class="group-title">{displayLabel}</span>
       {#if group.note}<span class="group-note">{group.note}</span>{/if}
       {#if !expanded}
         {#if mainQty === 0}

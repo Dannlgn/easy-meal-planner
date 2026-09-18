@@ -75,10 +75,9 @@
       <section class="meal-section">
         <div class="meal-header">
           <div class="meal-header-left">
-            <span class="dot" style="background:{row.color}"></span>
-            <span class="meal-label">{row.label}</span>
+            <span class="meal-tag">{row.label}</span>
+            <span class="meal-kcal-big">{Math.round(row.mt.kcal)} kcal</span>
           </div>
-          <span class="meal-kcal">{Math.round(row.mt.kcal)} kcal</span>
         </div>
 
         {#each row.foods as food}
@@ -202,28 +201,25 @@
   }
 
   .meal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 11px 14px;
+    padding: 12px 14px;
     background: transparent;
   }
 
   .meal-header-left {
     display: flex;
-    align-items: center;
-    gap: 9px;
+    flex-direction: column;
+    gap: 2px;
   }
 
-  .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
+  .meal-tag {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,.28);
   }
 
-  .meal-label { font-size: 13px; font-weight: 700; color: var(--text); }
-  .meal-kcal  { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .meal-kcal-big { font-size: 16px; font-weight: 700; color: var(--text); }
 
   .food-row {
     display: flex;
